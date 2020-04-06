@@ -91,18 +91,42 @@ ooxxoxoxxxoxoxxo", @"11
             Assert.Equal(outputs, answers);
         }
 
-        //[Theory]
-        //[InlineData(@"", @"")]
-        public void QuestionFTest(string input, string output)
+        [Theory]
+        [InlineData(@"15", @"23")]
+        [InlineData(@"1", @"1")]
+        [InlineData(@"13", @"21")]
+        [InlineData(@"100000", @"3234566667")]
+        public void QuestionD_ReviewTest(string input, string output)
         {
             var outputs = SplitByNewLine(output);
-            IAtCoderQuestion question = new QuestionF();
+            IAtCoderQuestion question = new QuestionD_Review();
 
-            var answers = question.Solve(input);
+            var answers = question.Solve(input).ToArray();
 
             Assert.Equal(outputs, answers);
         }
 
-        IEnumerable<string> SplitByNewLine(string input) => input.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+        [Theory]
+        [InlineData(@"11 3 2
+ooxxxoxxxoo", @"6")]
+        [InlineData(@"5 2 3
+ooxoo", @"1
+5")]
+        [InlineData(@"5 1 0
+ooooo", null)]
+        [InlineData(@"16 4 3
+ooxxoxoxxxoxoxxo", @"11
+16")]
+        public void QuestionE_ReviewTest(string input, string output)
+        {
+            var outputs = SplitByNewLine(output);
+            IAtCoderQuestion question = new QuestionE_Review();
+
+            var answers = question.Solve(input).ToArray();
+
+            Assert.Equal(outputs, answers);
+        }
+
+        IEnumerable<string> SplitByNewLine(string input) => input?.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None) ?? new string[0];
     }
 }

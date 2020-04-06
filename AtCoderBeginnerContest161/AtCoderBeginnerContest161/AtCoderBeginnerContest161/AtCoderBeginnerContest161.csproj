@@ -48,8 +48,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Questions\QuestionC.cs" />
     <Compile Include="Questions\QuestionD.cs" />
+    <Compile Include="Questions\QuestionE_Review.cs" />
     <Compile Include="Questions\QuestionE.cs" />
-    <Compile Include="Questions\QuestionF.cs" />
+    <Compile Include="Questions\QuestionD_Review.cs" />
     <Compile Include="Questions\QuestionB.cs" />
     <Compile Include="Questions\QuestionA.cs" />
   </ItemGroup>

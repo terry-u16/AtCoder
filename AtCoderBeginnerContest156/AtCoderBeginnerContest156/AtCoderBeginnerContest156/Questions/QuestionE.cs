@@ -23,6 +23,7 @@ namespace AtCoderBeginnerContest156.Questions
             counts = new int[n];
             fac = new int[n];
 
+            throw new NotImplementedException();
         }
 
         void Search()

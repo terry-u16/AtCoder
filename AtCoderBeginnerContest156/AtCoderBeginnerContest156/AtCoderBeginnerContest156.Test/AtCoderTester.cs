@@ -75,12 +75,13 @@ namespace AtCoderBeginnerContest156.Test
             Assert.Equal(outputs, answers);
         }
 
-        //[Theory]
-        //[InlineData(@"", @"")]
-        public void QuestionFTest(string input, string output)
+        [Theory]
+        [InlineData(@"4 1 3", @"7")]
+        [InlineData(@"1000000000 141421 173205", @"34076506")]
+        public void QuestionD_ModStructTest(string input, string output)
         {
             var outputs = SplitByNewLine(output);
-            IAtCoderQuestion question = new QuestionF();
+            IAtCoderQuestion question = new QuestionD_ModStruct();
 
             var answers = question.Solve(input).Select(o => o.ToString()).ToArray();
 

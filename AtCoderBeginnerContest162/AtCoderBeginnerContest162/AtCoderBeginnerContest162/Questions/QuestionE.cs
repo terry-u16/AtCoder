@@ -12,39 +12,29 @@ namespace AtCoderBeginnerContest162.Questions
 {
     public class QuestionE : AtCoderQuestionBase
     {
+        // 復習
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
             var (n, k) = inputStream.ReadValue<int, int>();
-            var primes = GetPrimes(k).ToArray();
-            var gcds = new Modular[primes.Length];
+            var patterns = new Modular[k];
 
             Modular total = new Modular(0);
-            for (int i = 1; i <= primes.Length; i++)
+            for (int i = k; i >= 1; i--)
             {
-                var prime = primes[i - 1];
-                total += new Modular(prime) * (Modular.Pow(new Modular(primes.Length - i + 1), n) - Modular.Pow(new Modular(primes.Length - i), n));
+                var pattern = Modular.Pow(new Modular(k / i), n);
+
+                for (int j = 2; i * j <= k; j++)
+                {
+                    pattern -= patterns[i * j - 1];
+                }
+
+                patterns[i - 1] = pattern;
+                var gcd = new Modular(i) * pattern;
+
+                total += gcd;
             }
 
             yield return total.Value;
-        }
-
-        IEnumerable<int> GetPrimes(int n)
-        {
-            var max = (int)Math.Sqrt(n);
-            var notPrimes = new bool[n];
-
-            for (int i = 2; i <= max; i++)
-            {
-                if (!notPrimes[i - 1])
-                {
-                    for (int j = i * 2; j <= n; j += i)
-                    {
-                        notPrimes[j - 1] = true;
-                    }
-                }
-            }
-
-            return notPrimes.Select((b, i) => (b, i)).Where(p => !p.b).Select(p => p.i + 1);
         }
     }
 }

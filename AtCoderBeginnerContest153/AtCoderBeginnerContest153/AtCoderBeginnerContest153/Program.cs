@@ -13,7 +13,7 @@ namespace AtCoderBeginnerContest153
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionF();    // 問題に合わせて書き換え
+            IAtCoderQuestion question = new QuestionF_Review();    // 問題に合わせて書き換え
             var answers = question.Solve(Console.In);
             foreach (var answer in answers)
             {

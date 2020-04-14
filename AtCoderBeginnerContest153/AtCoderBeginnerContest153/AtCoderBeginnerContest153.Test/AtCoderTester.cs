@@ -134,6 +134,35 @@ namespace AtCoderBeginnerContest153.Test
             Assert.Equal(outputs, answers);
         }
 
+        [Theory]
+        [InlineData(@"3 3 2
+1 2
+5 4
+9 2", @"2")]
+        [InlineData(@"9 4 1
+1 5
+2 4
+3 3
+4 2
+5 1
+6 2
+7 3
+8 4
+9 5", @"5")]
+        [InlineData(@"3 0 1
+300000000 1000000000
+100000000 1000000000
+200000000 1000000000", @"3000000000")]
+        public void QuestionF_ReviewTest(string input, string output)
+        {
+            var outputs = SplitByNewLine(output);
+            IAtCoderQuestion question = new QuestionF_Review();
+
+            var answers = question.Solve(input).Select(o => o.ToString()).ToArray();
+
+            Assert.Equal(outputs, answers);
+        }
+
         IEnumerable<string> SplitByNewLine(string input) => input?.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None) ?? new string[0];
     }
 }

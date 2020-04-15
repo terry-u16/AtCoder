@@ -2,6 +2,7 @@ using System;
 using Xunit;
 using JudgeSystemUpdateTestContest202004.Questions;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace JudgeSystemUpdateTestContest202004.Test
 {
@@ -58,14 +59,23 @@ namespace JudgeSystemUpdateTestContest202004.Test
             Assert.Equal(outputs, answers);
         }
 
-        //[Theory]
-        //[InlineData(@"", @"")]
+        [Theory]
+        [InlineData(@"4 3
+6 12 6 9
+4 6 3", @"4
+3
+3")]
+        [InlineData(@"4 3
+4 6 2 1
+3 2 1000000000", @"1
+4
+4")]
         public void QuestionDTest(string input, string output)
         {
             var outputs = SplitByNewLine(output);
             IAtCoderQuestion question = new QuestionD();
 
-            var answers = question.Solve(input);
+            var answers = question.Solve(input).ToArray();
 
             Assert.Equal(outputs, answers);
         }

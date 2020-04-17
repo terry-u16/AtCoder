@@ -13,7 +13,7 @@ namespace Yorukatsu018
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionE();    // 問題に合わせて書き換え
+            IAtCoderQuestion question = new QuestionD_UnionFind();    // 問題に合わせて書き換え
             var answers = question.Solve(Console.In);
             foreach (var answer in answers)
             {

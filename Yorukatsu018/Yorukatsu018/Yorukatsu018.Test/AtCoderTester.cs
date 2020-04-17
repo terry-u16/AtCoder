@@ -158,6 +158,35 @@ RINGO", @"7")]
             Assert.Equal(outputs, answers);
         }
 
+        [Theory]
+        [InlineData(@"7 7
+1 3
+2 7
+3 4
+4 5
+4 6
+5 6
+6 7", @"4")]
+        [InlineData(@"3 3
+1 2
+1 3
+2 3", @"0")]
+        [InlineData(@"6 5
+1 2
+2 3
+3 4
+4 5
+5 6", @"5")]
+        public void QuestionD_UnionFindTest(string input, string output)
+        {
+            var outputs = SplitByNewLine(output);
+            IAtCoderQuestion question = new QuestionD_UnionFind();
+
+            var answers = question.Solve(input).Select(o => o.ToString()).ToArray();
+
+            Assert.Equal(outputs, answers);
+        }
+
         //[Theory]
         //[InlineData(@"", @"")]
         public void QuestionFTest(string input, string output)

@@ -18,10 +18,6 @@ namespace LanguageTest202001.Questions
             var (b, c) = inputStream.ReadValue<int, int>();
             var s = inputStream.ReadLine();
             var d = new int[] { 1, 2, 3, 4, 5 };
-            foreach (var element in d.AsSpan()[1..^1])
-            {
-
-            }
             yield return $"{a + b + c} {s}";
         }
     }

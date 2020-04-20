@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yorukatsu020", "Yorukatsu020\Yorukatsu020\Yorukatsu020.csproj", "{104447A5-77B2-4B14-8584-DFF5F5743F0E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yorukatsu020.Test", "Yorukatsu020\Yorukatsu020.Test\Yorukatsu020.Test.csproj", "{1E163724-224A-4CC6-ADBD-CC7889F9FBB8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{104447A5-77B2-4B14-8584-DFF5F5743F0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{104447A5-77B2-4B14-8584-DFF5F5743F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{104447A5-77B2-4B14-8584-DFF5F5743F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{104447A5-77B2-4B14-8584-DFF5F5743F0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E163724-224A-4CC6-ADBD-CC7889F9FBB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E163724-224A-4CC6-ADBD-CC7889F9FBB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E163724-224A-4CC6-ADBD-CC7889F9FBB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E163724-224A-4CC6-ADBD-CC7889F9FBB8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {087B3F40-6EE4-4EF3-8AAC-2E95AFAA221F}
+	EndGlobalSection
+EndGlobal

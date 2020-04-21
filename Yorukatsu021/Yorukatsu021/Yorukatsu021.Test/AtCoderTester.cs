@@ -134,6 +134,35 @@ abcdefg
             Assert.Equal(outputs, answers);
         }
 
+
+        [Theory]
+        [InlineData(@"7
+abcdbbd
+6
+2 3 6
+1 5 z
+2 1 1
+1 4 a
+1 7 d
+2 1 7", @"3
+1
+5")]
+        [InlineData(@"7
+abcdefg
+2
+1 3 d
+2 1 4", @"3")]
+
+        public void QuestionE_SortedSetTest(string input, string output)
+        {
+            var outputs = SplitByNewLine(output);
+            IAtCoderQuestion question = new QuestionE_SortedSet();
+
+            var answers = question.Solve(input).Select(o => o.ToString()).ToArray();
+
+            Assert.Equal(outputs, answers);
+        }
+
         //[Theory]
         //[InlineData(@"", @"")]
         public void QuestionFTest(string input, string output)

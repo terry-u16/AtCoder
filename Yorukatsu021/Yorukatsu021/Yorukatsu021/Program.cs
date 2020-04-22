@@ -13,12 +13,16 @@ namespace Yorukatsu021
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionE_SortedSet();    // 問題に合わせて書き換え
+            IAtCoderQuestion question = new QuestionE_SegmentTreeT();    // 問題に合わせて書き換え
             var answers = question.Solve(Console.In);
+
+            var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };
+            Console.SetOut(writer);
             foreach (var answer in answers)
             {
                 Console.WriteLine(answer);
             }
+            Console.Out.Flush();
         }
     }
 }

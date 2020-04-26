@@ -10,32 +10,32 @@ using System.Text;
 
 namespace AtCoderBeginnerContest164.Questions
 {
+    /// <summary>
+    /// 復習
+    /// </summary>
     public class QuestionD : AtCoderQuestionBase
     {
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
             var s = inputStream.ReadLine();
-            var multiples = new HashSet<long>(Enumerable.Range(1, 9999).Select(i => (2019L * i).ToString()).Where(s => !s.Contains('0')).Select(long.Parse));
 
-            long count = 0;
-            int[] lastMultipleCount = new int[s.Length];
+            var mods = new Modular[s.Length + 1];
 
-            for (int index = 0; index + 5 - 1 < s.Length; index++)
+            mods[s.Length] = new Modular(0, 2019);
+            var tenFactor = new Modular(1, 2019);   // 10の位なら10を、100の位なら100を（mod 2019の世界で）かけていく
+            for (int index = s.Length - 1; index >= 0; index--)
             {
-                for (int subLength = 5; subLength <= 12; subLength++)
-                {
-                    if (index + subLength - 1 < s.Length && multiples.Contains(long.Parse(s.Substring(index, subLength))))
-                    {
-                        count += lastMultipleCount[index] + 1;
-                        if (index + subLength < s.Length)
-                        {
-                            lastMultipleCount[index + subLength] += lastMultipleCount[index] + 1;
-                        }
-                    }
-                }
+                mods[index] = mods[index + 1] + tenFactor * new Modular(s[index] - '0', 2019);
+                tenFactor *= new Modular(10, 2019);
             }
 
-            yield return count;
+            var counter = new Counter<Modular>();
+            foreach (var mod in mods)
+            {
+                counter[mod]++;
+            }
+
+            yield return counter.Where(pair => pair.count > 1).Sum(pair => pair.count * (pair.count - 1) / 2);
         }
     }
 }

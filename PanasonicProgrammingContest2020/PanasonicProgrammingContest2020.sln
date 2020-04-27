@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PanasonicProgrammingContest2020", "PanasonicProgrammingContest2020\PanasonicProgrammingContest2020\PanasonicProgrammingContest2020.csproj", "{B09E88CE-5646-418C-B651-D93ABF1190B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PanasonicProgrammingContest2020.Test", "PanasonicProgrammingContest2020\PanasonicProgrammingContest2020.Test\PanasonicProgrammingContest2020.Test.csproj", "{4FB60F7A-6FD7-471E-A21B-6CF5E8577564}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B09E88CE-5646-418C-B651-D93ABF1190B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B09E88CE-5646-418C-B651-D93ABF1190B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B09E88CE-5646-418C-B651-D93ABF1190B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B09E88CE-5646-418C-B651-D93ABF1190B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FB60F7A-6FD7-471E-A21B-6CF5E8577564}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FB60F7A-6FD7-471E-A21B-6CF5E8577564}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FB60F7A-6FD7-471E-A21B-6CF5E8577564}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FB60F7A-6FD7-471E-A21B-6CF5E8577564}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5552744-8462-43F3-908C-866AC700AC6E}
+	EndGlobalSection
+EndGlobal

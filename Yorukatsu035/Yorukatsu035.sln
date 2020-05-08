@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yorukatsu035", "Yorukatsu035\Yorukatsu035\Yorukatsu035.csproj", "{C30D2E3D-0A04-42F0-A6FE-95DE144E7E67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yorukatsu035.Test", "Yorukatsu035\Yorukatsu035.Test\Yorukatsu035.Test.csproj", "{6FFDFDBA-BA1D-49D0-8FD0-D1C346C9F9FB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C30D2E3D-0A04-42F0-A6FE-95DE144E7E67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C30D2E3D-0A04-42F0-A6FE-95DE144E7E67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C30D2E3D-0A04-42F0-A6FE-95DE144E7E67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C30D2E3D-0A04-42F0-A6FE-95DE144E7E67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6FFDFDBA-BA1D-49D0-8FD0-D1C346C9F9FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FFDFDBA-BA1D-49D0-8FD0-D1C346C9F9FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FFDFDBA-BA1D-49D0-8FD0-D1C346C9F9FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FFDFDBA-BA1D-49D0-8FD0-D1C346C9F9FB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3C21E6D1-341D-4E2A-B47C-13E764E53722}
+	EndGlobalSection
+EndGlobal

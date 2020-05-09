@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace Yorukatsu036.Questions
 {
@@ -14,6 +15,7 @@ namespace Yorukatsu036.Questions
     public class QuestionF : AtCoderQuestionBase
     {
         List<int>[] edges;
+        private DPState[] dpStates;
 
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
@@ -21,14 +23,90 @@ namespace Yorukatsu036.Questions
 
             edges = Enumerable.Repeat(0, nodesCount).Select(_ => new List<int>()).ToArray();
 
-            for (int i = 0; i < nodesCount; i++)
+            for (int i = 0; i < nodesCount - 1; i++)
             {
                 var ab = inputStream.ReadIntArray().Select(j => j - 1).ToArray();
                 edges[ab[0]].Add(ab[1]);
                 edges[ab[1]].Add(ab[0]);
             }
 
+            dpStates = new DPState[nodesCount];
 
+            for (int i = 0; i < dpStates.Length; i++)
+            {
+                dpStates[i] = new DPState(new Modular(1), 0);
+            }
+
+            Dfs(0, -1); // 0の答えだけはOK
+            Bfs(0, -1); // 1,2,...について、足りない分を足してあげる
+            foreach (var dpState in dpStates)
+            {
+                yield return dpState.AddRoot().Count.Value;
+            }
+        }
+
+        /// <summary>
+        /// 下がっていくやつ
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="parent"></param>
+        /// <returns></returns>
+        private void Dfs(int root, int parent)
+        {
+            foreach (var child in edges[root])
+            {
+                if (child != parent)
+                {
+                    Dfs(child, root);
+                    dpStates[root] += dpStates[child].AddRoot();
+                }
+            }
+        }
+
+        /// <summary>
+        /// 上がっていくやつ
+        /// </summary>
+        /// <param name="root"></param>
+        /// <param name="parent"></param>
+        void Bfs(int root, int parent)
+        {
+            foreach (var child in edges[root])
+            {
+                if (child != parent)
+                {
+                    var d = dpStates[root] - dpStates[child].AddRoot();
+                    dpStates[child] += d.AddRoot();
+                    Bfs(child, root);
+                }
+            }
+        }
+
+        struct DPState
+        {
+            public Modular Count { get; }
+            public int Size { get; }
+
+            public DPState(Modular count, int size)
+            {
+                Count = count;
+                Size = size;
+            }
+
+            public static DPState operator+(DPState state1, DPState state2)
+            {
+                var size = state1.Size + state2.Size;
+                var count = Modular.Combination(size, state1.Size) * state1.Count * state2.Count;
+                return new DPState(count, size);
+            }
+
+            public static DPState operator-(DPState state1, DPState state2)
+            {
+                var size = state1.Size - state2.Size;
+                var count = state1.Count / (Modular.Combination(state1.Size, state2.Size) * state2.Count);
+                return new DPState(count, size);
+            }
+
+            public DPState AddRoot() => new DPState(Count, Size + 1);
         }
 
         [System.Runtime.InteropServices.StructLayout(System.Runtime.InteropServices.LayoutKind.Auto)]

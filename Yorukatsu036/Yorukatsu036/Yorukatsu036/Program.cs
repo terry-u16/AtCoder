@@ -15,10 +15,13 @@ namespace Yorukatsu036
         {
             IAtCoderQuestion question = new QuestionF();    // 問題に合わせて書き換え
             var answers = question.Solve(Console.In);
+            var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };
+            Console.SetOut(writer);
             foreach (var answer in answers)
             {
                 Console.WriteLine(answer);
             }
+            Console.Out.Flush();
         }
     }
 }

@@ -236,6 +236,29 @@ avadakedavra", @"aaadara")]
             Assert.Equal(outputs.Select(double.Parse), answers.Select(double.Parse));
         }
 
+        [Theory]
+        [InlineData(@"3
+1 1 1", @"5.5")]
+        [InlineData(@"1
+3", @"3")]
+        [InlineData(@"2
+1 2", @"4.5")]
+        [InlineData(@"10
+1 3 2 3 3 2 3 2 1 3", @"54.48064457488221")]
+        public void QuestionJTest(string input, string output)
+        {
+            var outputs = SplitByNewLine(output).Select(double.Parse).ToArray();
+            IAtCoderQuestion question = new QuestionJ();
+
+            var answers = question.Solve(input).Select(o => o.ToString()).Select(double.Parse).ToArray();
+
+            Assert.Equal(outputs.Length, answers.Length);
+            for (int i = 0; i < answers.Length; i++)
+            {
+                Assert.True(Math.Abs(outputs[i] - answers[i]) < 1e-9);
+            }
+        }
+
 
         IEnumerable<string> SplitByNewLine(string input) => input?.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None) ?? new string[0];
     }

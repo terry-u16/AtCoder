@@ -49,6 +49,7 @@
     <Compile Include="Questions\QuestionC.cs" />
     <Compile Include="Questions\QuestionD.cs" />
     <Compile Include="Questions\QuestionE.cs" />
+    <Compile Include="Questions\QuestionJ.cs" />
     <Compile Include="Questions\QuestionI.cs" />
     <Compile Include="Questions\QuestionH.cs" />
     <Compile Include="Questions\QuestionG.cs" />

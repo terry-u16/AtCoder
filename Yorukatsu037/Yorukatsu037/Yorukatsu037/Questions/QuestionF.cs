@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.RegularExpressions;
 
 namespace Yorukatsu037.Questions
 {
@@ -31,27 +30,31 @@ namespace Yorukatsu037.Questions
             var unitedRobots = new UnionFindTree(robots.Select(r => r.Destination));
             var destinations = new SegmentTree<int>(robots.Select(r => r.Destination).ToArray(), (d1, d2) => Math.Max(d1, d2), int.MinValue);
 
-            var count = new Modular(1, 998244353);
+            const int mod = 998244353;
+            var counts = new Modular[robots.Length + 1];
+            for (int i = 0; i < counts.Length; i++)
+            {
+                counts[i] = new Modular(0, mod);
+            }
+            counts[0] = new Modular(1, mod);
+
             for (int i = 0; i < robots.Length; i++)
             {
                 var currentRobot = robots[i];
-                var inRangeRobotIndex = BoundaryBinarySearch(mid => robots[mid].Coordinate < currentRobot.Coordinate + currentRobot.Length, -1, i);
+                var inRangeRobotIndex = BoundaryBinarySearch(mid => robots[mid].Coordinate < currentRobot.Destination, -1, i);
 
-                while (inRangeRobotIndex < i)
+                while (!unitedRobots.IsInSameGroup(inRangeRobotIndex, i))
                 {
-                    unitedRobots.Unite(inRangeRobotIndex, i);
-                    var nextIndex = BoundaryBinarySearch(mid => unitedRobots.IsInSameGroup(mid, i), i, inRangeRobotIndex) + 1;
-                    if (inRangeRobotIndex == nextIndex)
-                    {
-                        break;
-                    }
-                    inRangeRobotIndex = nextIndex;
+                    var hasntUnited = BoundaryBinarySearch(mid => !unitedRobots.IsInSameGroup(mid, i), i, inRangeRobotIndex);
+                    unitedRobots.Unite(hasntUnited, i);
                 }
-                var groups = unitedRobots.Groups - (robots.Length - i);
-                count += Modular.Pow(new Modular(2, 998244353), groups);
+
+                var outOfRangeRobotIndex = BoundaryBinarySearch(mid => !unitedRobots.IsInSameGroup(mid, i), i, -1);
+
+                counts[i + 1] += counts[i] + counts[outOfRangeRobotIndex + 1];
             }
 
-            yield return count.Value;
+            yield return counts[robots.Length].Value;
         }
 
         struct Robot : IComparable<Robot>
@@ -230,6 +233,7 @@ namespace Yorukatsu037.Questions
 
             public bool IsInSameGroup(int index1, int index2) => _nodes[index1].IsInSameGroup(_nodes[index2]);
             public int GetGroupSizeOf(int index) => _nodes[index].GetGroupSize();
+            public int this[int index] => _nodes[index].Destination;
 
             private class UnionFindNode
             {

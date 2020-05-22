@@ -7,135 +7,273 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Diagnostics.CodeAnalysis;
 
 namespace PAST002.Questions
 {
     /// <summary>
-    /// この方法だとTLE/MLEする
+    /// 復習
     /// </summary>
     public class QuestionN : AtCoderQuestionBase
     {
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
             var (sitesCount, queriesCount) = inputStream.ReadValue<int, int>();
-            var sites = new Site[sitesCount];
+            var yCoordinates = new HashSet<int>();
+            var queries = new List<Query>();
+            var toAnswer = new Queue<SumQuery>();
+            var answers = new Dictionary<SumQuery, long>();
 
-            for (int i = 0; i < sites.Length; i++)
+            for (int i = 0; i < sitesCount; i++)
             {
                 var (x, y, d, c) = inputStream.ReadValue<int, int, int, int>();
-                sites[i] = new Site(x, y, d, c);
+                yCoordinates.Add(y);
+                yCoordinates.Add(y + d + 1);
+                queries.Add(new AddQuery(x, y, d, c));
+                queries.Add(new AddQuery(x + d + 1, y, d, -c));
             }
 
-            var (xCompressed, yCompressed) = Compress(sites);
-
-            var costs = new long[xCompressed.Length, yCompressed.Length];
-            foreach (var site in sites)
+            for (int i = 0; i < queriesCount; i++)
             {
-                var x1 = ToCompressedCoordinate(xCompressed, site.X);
-                var x2 = ToCompressedCoordinate(xCompressed, site.X + site.Length + 1);
-                var y1 = ToCompressedCoordinate(yCompressed, site.Y);
-                var y2 = ToCompressedCoordinate(yCompressed, site.Y + site.Length + 1);
-                costs[x1, y1] += site.Cost;
-                costs[x1, y2] -= site.Cost;
-                costs[x2, y1] -= site.Cost;
-                costs[x2, y2] += site.Cost;
+                var (a, b) = inputStream.ReadValue<int, int>();
+                yCoordinates.Add(b);
+                var query = new SumQuery(a, b);
+                queries.Add(query);
+                toAnswer.Enqueue(query);
             }
 
-            Imos(costs);
+            queries.Sort();
+            var shrinker = new CoordinateShrinker<int>(yCoordinates);
+            var costs = new BinaryIndexedTree(shrinker.Count);
 
-            for (int q = 0; q < queriesCount; q++)
+            foreach (var query in queries)
             {
-                var (x, y) = inputStream.ReadValue<int, int>();
-                var xComp = ToCompressedCoordinate(xCompressed, x);
-                var yComp = ToCompressedCoordinate(yCompressed, y);
-                yield return costs[xComp, yComp];
-            }
-        }
+                var shrinkedY = shrinker.Shrink(query.Y);
 
-        void Imos(long[,] array)
-        {
-            var w = array.GetLength(0);
-            var h = array.GetLength(1);
-
-            for (int y = 0; y + 1 < h; y++)
-            {
-                for (int x = 0; x < w; x++)
+                if (query is AddQuery addQuery)
                 {
-                    array[x, y + 1] += array[x, y];
+                    var shrinkedYPlusD = shrinker.Shrink(addQuery.Y + addQuery.Distance + 1);
+                    costs.AddAt(shrinkedY, addQuery.Cost);
+                    costs.AddAt(shrinkedYPlusD, -addQuery.Cost);
+                }
+                else if (query is SumQuery sumQuery)
+                {
+                    answers.Add(sumQuery, costs.Sum(shrinkedY + 1));
                 }
             }
 
-            for (int y = 0; y < h; y++)
+            foreach (var query in toAnswer)
             {
-                for (int x = 0; x + 1 < w; x++)
-                {
-                    array[x + 1, y] += array[x, y];
-                }
+                yield return answers[query];
             }
         }
 
-        int ToCompressedCoordinate(int[] compressedCoordinates, int coordinate) => BoundaryBinarySearch<int>(compressedCoordinates, i => i <= coordinate, compressedCoordinates.Length, -1);
 
-        private static int BoundaryBinarySearch<T>(ReadOnlySpan<T> span, Predicate<T> predicate, int ng, int ok)
-        {
-            // めぐる式二分探索
-            // Span.BinarySearchだとできそうでできない（lower_boundがダメ）
-            while (Math.Abs(ok - ng) > 1)
-            {
-                int mid = (ok + ng) / 2;
-
-                if (predicate(span[mid]))
-                {
-                    ok = mid;
-                }
-                else
-                {
-                    ng = mid;
-                }
-            }
-            return ok;
-        }
-
-
-        (int[] x, int[] y) Compress(Site[] sites)
-        {
-            var xPositions = new HashSet<int>();
-            var yPositions = new HashSet<int>();
-
-            xPositions.Add(int.MinValue);
-            xPositions.Add(int.MaxValue);
-            yPositions.Add(int.MinValue);
-            yPositions.Add(int.MaxValue);
-
-            foreach (var site in sites)
-            {
-                xPositions.Add(site.X);
-                xPositions.Add(site.X + site.Length + 1);
-                yPositions.Add(site.Y);
-                yPositions.Add(site.Y + site.Length + 1);
-            }
-
-            var xComp = xPositions.ToArray();
-            var yComp = yPositions.ToArray();
-            Array.Sort(xComp);
-            Array.Sort(yComp);
-            return (xComp, yComp);
-        }
-
-        readonly struct Site
+        abstract class Query : IComparable<Query>, IEquatable<Query>
         {
             public int X { get; }
             public int Y { get; }
-            public int Length { get; }
-            public int Cost { get; }
+            protected bool _isAddQuery;
 
-            public Site(int x, int y, int length, int cost)
+            protected Query(int x, int y)
             {
                 X = x;
                 Y = y;
-                Length = length;
-                Cost = cost;
+            }
+
+            public int CompareTo([AllowNull] Query other)
+            {
+                var compared = X.CompareTo(other.X);
+                if (compared != 0)
+                {
+                    return compared;
+                }
+
+                return -_isAddQuery.CompareTo(other._isAddQuery);
+            }
+
+            public override bool Equals(object obj)
+            {
+                return Equals(obj as Query);
+            }
+
+            public bool Equals(Query other)
+            {
+                return other != null &&
+                       X == other.X &&
+                       Y == other.Y &&
+                       _isAddQuery == other._isAddQuery;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(X, Y, _isAddQuery);
+            }
+
+            public static bool operator ==(Query left, Query right)
+            {
+                return EqualityComparer<Query>.Default.Equals(left, right);
+            }
+
+            public static bool operator !=(Query left, Query right)
+            {
+                return !(left == right);
             }
         }
+
+        class AddQuery : Query
+        {
+            public int Cost { get; }
+            public int Distance { get; }
+
+            public AddQuery(int x, int y, int distance, int cost) : base(x, y)
+            {
+                _isAddQuery = true;
+                Cost = cost;
+                Distance = distance;
+            }
+        }
+
+        class SumQuery : Query
+        {
+            public SumQuery(int x, int y) : base(x, y)
+            {
+            }
+        }
+
+        public class CoordinateShrinker<T> : IEnumerable<(int shrinkedIndex, T rawIndex)> where T : IComparable<T>, IEquatable<T>
+        {
+            Dictionary<T, int> _shrinkMapper;
+            T[] _expandMapper;
+            public int Count => _expandMapper.Length;
+
+            public CoordinateShrinker(IEnumerable<T> data)
+            {
+                _expandMapper = data.Distinct().ToArray();
+                Array.Sort(_expandMapper);
+
+                _shrinkMapper = new Dictionary<T, int>();
+                for (int i = 0; i < _expandMapper.Length; i++)
+                {
+                    _shrinkMapper.Add(_expandMapper[i], i);
+                }
+            }
+
+            public int Shrink(T rawCoordinate) => _shrinkMapper[rawCoordinate];
+            public T Expand(int shrinkedCoordinate) => _expandMapper[shrinkedCoordinate];
+
+            public IEnumerator<(int shrinkedIndex, T rawIndex)> GetEnumerator()
+            {
+                for (int i = 0; i < _expandMapper.Length; i++)
+                {
+                    yield return (i, _expandMapper[i]);
+                }
+            }
+
+            System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => GetEnumerator();
+        }
+
+        public class BinaryIndexedTree
+        {
+            long[] _data;
+            public ReadOnlySpan<long> Data => _data[1..];
+            public int Length { get; }
+
+            public BinaryIndexedTree(int length)
+            {
+                _data = new long[length + 1];   // 内部的には1-indexedにする
+                Length = length;
+            }
+
+            public BinaryIndexedTree(IEnumerable<long> data, int length) : this(length)
+            {
+                var count = 0;
+                foreach (var n in data)
+                {
+                    AddAt(count++, n);
+                }
+            }
+
+            public BinaryIndexedTree(ICollection<long> collection) : this(collection, collection.Count) { }
+
+            /// <summary>
+            /// BITの<c>index</c>番目の要素に<c>n</c>を加算します。
+            /// </summary>
+            /// <param name="index">加算するインデックス（0-indexed）</param>
+            /// <param name="n">加算する数</param>
+            public void AddAt(Index index, long n)
+            {
+                var i = index.GetOffset(Length) + 1;  // 1-indexedにする
+                while (i <= Length)
+                {
+                    _data[i] += n;
+                    i += i & -i;    // LSBの加算
+                }
+            }
+
+            /// <summary>
+            /// [0, <c>end</c>)の部分和を返します。
+            /// </summary>
+            /// <param name="end">部分和を求める半開区間の終了インデックス</param>
+            /// <returns>区間の部分和</returns>
+            public long Sum(Index end)
+            {
+                var i = end.GetOffset(Length);  // 0-indexedの半開区間＝1-indexedの閉区間なので+1は不要
+                long sum = 0;
+                while (i > 0)
+                {
+                    sum += _data[i];
+                    i -= i & -i;    // LSBの減算
+                }
+                return sum;
+            }
+
+            /// <summary>
+            /// <c>range</c>の部分和を返します。
+            /// </summary>
+            /// <param name="range">部分和を求める半開区間</param>
+            /// <returns>区間の部分和</returns>
+            public long Sum(Range range) => Sum(range.End) - Sum(range.Start);
+
+            /// <summary>
+            /// [<c>start</c>, <c>end</c>)の部分和を返します。
+            /// </summary>
+            /// <param name="start">部分和を求める半開区間の開始インデックス</param>
+            /// <param name="end">部分和を求める半開区間の終了インデックス</param>
+            /// <returns>区間の部分和</returns>
+            public long Sum(int start, int end) => Sum(end) - Sum(start);
+
+            /// <summary>
+            /// [0, <c>index</c>)の部分和が<c>sum</c>未満になる最大の<c>index</c>を返します。
+            /// BIT上の各要素は0以上の数である必要があります。
+            /// </summary>
+            /// <param name="sum"></param>
+            /// <returns></returns>
+            public int GetLowerBound(long sum)
+            {
+                int index = 0;
+                for (int offset = GetMostSignificantBitOf(Length); offset > 0; offset >>= 1)
+                {
+                    if (index + offset < _data.Length && _data[index + offset] < sum)
+                    {
+                        index += offset;
+                        sum -= _data[index];
+                    }
+                }
+
+                return index;
+
+                int GetMostSignificantBitOf(int n)
+                {
+                    int k = 1;
+                    while ((k << 1) <= n)
+                    {
+                        k <<= 1;
+                    };
+                    return k;
+                }
+            }
+        }
+
     }
 }

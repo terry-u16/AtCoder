@@ -11,119 +11,78 @@ using AtCoderGrandContest044.Questions;
 
 namespace AtCoderGrandContest044.Questions
 {
+    /// <summary>
+    /// 復習
+    /// </summary>
     public class QuestionB : AtCoderQuestionBase
     {
-        List<Edge>[] edges;
-
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
             var n = inputStream.ReadInt();
             var people = inputStream.ReadIntArray().Select(i => i - 1).ToArray();
-            var seats = new int[n, n];
+            var costs = GetInitializedCost(n);
+            var isVacant = new bool[n, n];
 
-            for (int i = 0; i < people.Length; i++)
+            var totalCost = 0;
+            foreach (var person in people)
             {
-                var person = people[i];
-                var row = person / n;
-                var column = person % n;
-                seats[row, column] = i;
+                var (row, column) = ToRowAndColumn(person, n);
+                totalCost += costs[row, column];
+                isVacant[row, column] = true;
+                UpdateCosts(costs, isVacant, row, column);
             }
 
-            edges = Enumerable.Range(0, people.Length + 1).Select(_ => new List<Edge>()).ToArray();
+            yield return totalCost;
+        }
+
+        int[,] GetInitializedCost(int n)
+        {
+            var costs = new int[n, n];
 
             for (int row = 0; row < n; row++)
             {
                 for (int column = 0; column < n; column++)
                 {
-                    var me = seats[row, column];
-                    var index = row * n + column;
-                    if (row - 1 >= 0)
-                    {
-                        edges[index].Add(new Edge(index - n, me > seats[row - 1, column] ? 1 : 0));
-                    }
-                    if (row + 1 < n)
-                    {
-                        edges[index].Add(new Edge(index + n, me > seats[row + 1, column] ? 1 : 0));
-                    }
-                    if (column - 1 >= 0)
-                    {
-                        edges[index].Add(new Edge(index - 1, me > seats[row, column - 1] ? 1 : 0));
-                    }
-                    if (column + 1 < n)
-                    {
-                        edges[index].Add(new Edge(index + 1, me > seats[row, column + 1] ? 1 : 0));
-                    }
-
-                    if (row == 0 || row == n - 1 || column == 0 || column == n - 1)
-                    {
-                        edges[index].Add(new Edge(n * n, 0));
-                        edges[n * n].Add(new Edge(index, 0));
-                    }
-                }
-            }
-
-            var costs = GetMinCostsFrom(n * n, edges);
-            yield return costs.Sum();
-        }
-
-        int[] GetMinCostsFrom(int start, List<Edge>[] edges)
-        {
-            var costs = Enumerable.Repeat(1 << 28, edges.Length).ToArray();
-
-            var queue = new PriorityQueue<DPState>(false);
-            queue.Enqueue(new DPState(start, 0));
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-
-                if (current.TotalCost > costs[current.Point])
-                {
-                    continue;
-                }
-
-                foreach (var edge in edges[current.Point])
-                {
-                    var currentCost = current.TotalCost + edge.Cost;
-                    if (costs[edge.To] > currentCost)
-                    {
-                        costs[edge.To] = currentCost;
-                        queue.Enqueue(new DPState(edge.To, currentCost));
-                    }
+                    var cost = Math.Min(Math.Min(Math.Min(row, n - 1 - row), column), n - 1 - column);
+                    costs[row, column] = cost;
                 }
             }
 
             return costs;
         }
 
-
-        struct Edge
+        void UpdateCosts(int[,] costs, bool[,] isVacant, int lastRow, int lastColumn)
         {
-            public int To { get; }
-            public int Cost { get; }
+            var n = costs.GetLength(0);
+            var todo = new Queue<(int row, int column)>();
+            todo.Enqueue((lastRow, lastColumn));
+            Span<(int dy, int dx)> delta = stackalloc (int, int)[4] { (-1, 0), (1, 0), (0, -1), (0, 1) };
 
-            public Edge(int to, int distance)
+            while (todo.Count > 0)
             {
-                To = to;
-                Cost = distance;
-            }
+                var (row, column) = todo.Dequeue();
+                var vacant = isVacant[row, column];
+                var currentCost = costs[row, column];
 
-            public override string ToString() => $"--{Cost:0}-->{To}";
+                foreach (var (dy, dx) in delta)
+                {
+                    var nextRow = row + dy;
+                    var nextColumn = column + dx;
+                    if ((uint)nextRow >= (uint)n || (uint)nextColumn >= (uint)n)
+                    {
+                        continue;
+                    }
+
+                    var nextCost = currentCost + (vacant ? 0 : 1);
+                    if (costs[nextRow, nextColumn] > nextCost)
+                    {
+                        costs[nextRow, nextColumn] = nextCost;
+                        todo.Enqueue((nextRow, nextColumn));
+                    }
+                }
+            }
         }
 
-        struct DPState : IComparable<DPState>
-        {
-            public int Point { get; }
-            public int TotalCost { get; }
-
-            public DPState(int point, int totalDistance)
-            {
-                Point = point;
-                TotalCost = totalDistance;
-            }
-
-            public int CompareTo(DPState other) => TotalCost.CompareTo(other.TotalCost);
-        }
-
+        (int row, int column) ToRowAndColumn(int i, int n) => (i / n, i % n);
     }
 }

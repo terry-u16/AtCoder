@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Training20200527", "Training20200527\Training20200527\Training20200527.csproj", "{94087D01-7287-4578-B04D-70DF173C0136}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Training20200527.Test", "Training20200527\Training20200527.Test\Training20200527.Test.csproj", "{FB420446-FAEF-4086-8277-B2FECEADEF37}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{94087D01-7287-4578-B04D-70DF173C0136}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94087D01-7287-4578-B04D-70DF173C0136}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94087D01-7287-4578-B04D-70DF173C0136}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94087D01-7287-4578-B04D-70DF173C0136}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB420446-FAEF-4086-8277-B2FECEADEF37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB420446-FAEF-4086-8277-B2FECEADEF37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB420446-FAEF-4086-8277-B2FECEADEF37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB420446-FAEF-4086-8277-B2FECEADEF37}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2D2D3501-FF7E-4E3C-877C-7F7A12464D34}
+	EndGlobalSection
+EndGlobal

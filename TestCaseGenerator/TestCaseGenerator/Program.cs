@@ -13,14 +13,21 @@ namespace TestCaseGenerator
             const string inputFilePath = "input.txt";
             const string outputFilePath = "output.txt";
 
-            WriteInput(new StreamWriter(inputFilePath, false, Encoding.UTF8));
-            WriteOutput(new StreamWriter(outputFilePath, false, Encoding.UTF8));
+            using var inputWriter = new StreamWriter(inputFilePath, false, Encoding.UTF8);
+            using var outputWriter = new StreamWriter(outputFilePath, false, Encoding.UTF8);
+            WriteInput(inputWriter);
+            WriteOutput(outputWriter);
         }
 
         static void WriteInput(TextWriter writer)
         {
-            writer.WriteLine(500);
-            writer.WriteLine(string.Join(" ", Enumerable.Range(1, 500 * 500)));
+            const int N = 100000;
+            writer.WriteLine(N);
+            int i;
+            for (i = 2; i <= N; i++)
+            {
+                writer.WriteLine(i - 1);
+            }
         }
 
         static void WriteOutput(TextWriter writer)

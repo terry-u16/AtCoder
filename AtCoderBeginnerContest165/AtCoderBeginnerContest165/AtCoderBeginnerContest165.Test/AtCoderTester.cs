@@ -96,6 +96,33 @@ namespace AtCoderBeginnerContest165.Test
             Assert.Equal(outputs, answers);
         }
 
+        [Theory]
+        [InlineData(@"3 4 3
+1 3 3 100
+1 2 2 10
+2 3 2 10", @"110")]
+        [InlineData(@"4 6 10
+2 4 1 86568
+1 4 0 90629
+2 3 0 90310
+3 4 1 29211
+3 4 3 78537
+3 4 2 8580
+1 2 1 96263
+1 4 2 2156
+1 2 0 94325
+1 4 3 94328", @"357500")]
+        [InlineData(@"10 10 1
+1 10 9 1", @"1")]
+        public void QuestionCReview2Test(string input, string output)
+        {
+            var outputs = SplitByNewLine(output);
+            IAtCoderQuestion question = new QuestionC_Review2();
+
+            var answers = question.Solve(input).Select(o => o.ToString()).ToArray();
+
+            Assert.Equal(outputs, answers);
+        }
 
         [Theory]
         [InlineData(@"5 7 4", @"2")]

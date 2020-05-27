@@ -15,7 +15,7 @@ namespace AtCoderBeginnerContest165
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionC_Review();    // 問題に合わせて書き換え
+            IAtCoderQuestion question = new QuestionC_Review2();    // 問題に合わせて書き換え
             var answers = question.Solve(Console.In);
 
             var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };

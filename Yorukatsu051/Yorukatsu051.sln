@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yorukatsu051", "Yorukatsu051\Yorukatsu051\Yorukatsu051.csproj", "{3A9FD816-F9AB-4A45-A64E-7397E141E8AA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yorukatsu051.Test", "Yorukatsu051\Yorukatsu051.Test\Yorukatsu051.Test.csproj", "{8CBD4864-ADE0-4443-A21F-96631A218B02}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3A9FD816-F9AB-4A45-A64E-7397E141E8AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A9FD816-F9AB-4A45-A64E-7397E141E8AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A9FD816-F9AB-4A45-A64E-7397E141E8AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A9FD816-F9AB-4A45-A64E-7397E141E8AA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8CBD4864-ADE0-4443-A21F-96631A218B02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8CBD4864-ADE0-4443-A21F-96631A218B02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8CBD4864-ADE0-4443-A21F-96631A218B02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8CBD4864-ADE0-4443-A21F-96631A218B02}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A2922020-1CBD-4292-8714-3A39C076304E}
+	EndGlobalSection
+EndGlobal

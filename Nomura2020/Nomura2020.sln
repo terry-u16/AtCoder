@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nomura2020", "Nomura2020\Nomura2020\Nomura2020.csproj", "{6E50AA81-CC4F-46F6-AB89-0A05F57F9400}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nomura2020.Test", "Nomura2020\Nomura2020.Test\Nomura2020.Test.csproj", "{EFA3BC45-F671-4983-9900-78CD8C9B9F54}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6E50AA81-CC4F-46F6-AB89-0A05F57F9400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E50AA81-CC4F-46F6-AB89-0A05F57F9400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E50AA81-CC4F-46F6-AB89-0A05F57F9400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E50AA81-CC4F-46F6-AB89-0A05F57F9400}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFA3BC45-F671-4983-9900-78CD8C9B9F54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFA3BC45-F671-4983-9900-78CD8C9B9F54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFA3BC45-F671-4983-9900-78CD8C9B9F54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFA3BC45-F671-4983-9900-78CD8C9B9F54}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7338393A-9A5E-409E-9586-A2D5CD228E13}
+	EndGlobalSection
+EndGlobal

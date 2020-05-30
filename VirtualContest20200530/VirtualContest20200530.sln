@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualContest20200530", "VirtualContest20200530\VirtualContest20200530\VirtualContest20200530.csproj", "{DAB5EEDA-6CD2-450F-934B-1A2717C48EAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualContest20200530.Test", "VirtualContest20200530\VirtualContest20200530.Test\VirtualContest20200530.Test.csproj", "{3525028C-468E-4FFA-A826-B3242AC93449}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAB5EEDA-6CD2-450F-934B-1A2717C48EAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAB5EEDA-6CD2-450F-934B-1A2717C48EAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAB5EEDA-6CD2-450F-934B-1A2717C48EAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAB5EEDA-6CD2-450F-934B-1A2717C48EAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3525028C-468E-4FFA-A826-B3242AC93449}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3525028C-468E-4FFA-A826-B3242AC93449}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3525028C-468E-4FFA-A826-B3242AC93449}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3525028C-468E-4FFA-A826-B3242AC93449}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0419E263-5789-4B8E-ABC9-105DA9B49AFD}
+	EndGlobalSection
+EndGlobal

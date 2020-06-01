@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yorukatsu053", "Yorukatsu053\Yorukatsu053\Yorukatsu053.csproj", "{C02DA030-2C75-4B2E-BB1F-B1A508B27A7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Yorukatsu053.Test", "Yorukatsu053\Yorukatsu053.Test\Yorukatsu053.Test.csproj", "{BC85D9AD-1889-4DA3-B1CB-1A378EA3C7BE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{C02DA030-2C75-4B2E-BB1F-B1A508B27A7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C02DA030-2C75-4B2E-BB1F-B1A508B27A7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C02DA030-2C75-4B2E-BB1F-B1A508B27A7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C02DA030-2C75-4B2E-BB1F-B1A508B27A7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC85D9AD-1889-4DA3-B1CB-1A378EA3C7BE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC85D9AD-1889-4DA3-B1CB-1A378EA3C7BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC85D9AD-1889-4DA3-B1CB-1A378EA3C7BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC85D9AD-1889-4DA3-B1CB-1A378EA3C7BE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A82ADAC2-C5B6-4167-A993-D82FAC8C0E27}
+	EndGlobalSection
+EndGlobal

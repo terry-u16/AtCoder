@@ -11,11 +11,14 @@ using TokioMarine2020.Questions;
 
 namespace TokioMarine2020.Questions
 {
+    /// <summary>
+    /// 復習
+    /// </summary>
     public class QuestionD : AtCoderQuestionBase
     {
-        Dictionary<int, int[]> _knapsack;
+        int[,] _values;
         Goods[] _goods;
-        const int maxCapacity = 100001;
+        const int maxCapacity = 100000;
 
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
@@ -28,42 +31,61 @@ namespace TokioMarine2020.Questions
                 _goods[i] = new Goods(v, w);
             }
 
-            _knapsack = new Dictionary<int, int[]>();
+            var halfPow2 = GetHalfPow2(n);
+            Initialize(1 << halfPow2);
 
             var queries = inputStream.ReadInt();
             for (int q = 0; q < queries; q++)
             {
                 var (node, capacity) = inputStream.ReadValue<int, int>();
-                var values = GetKnapsackAt(node);
-                yield return values[capacity];
+                yield return GetValueAt(node, capacity);
             }
         }
 
-        int[] GetKnapsackAt(int index)
+        int GetHalfPow2(int n)
         {
-            if (index == 0)
-            {
-                var current = new int[maxCapacity];
-                return current;
-            }
-            else if (!_knapsack.ContainsKey(index))
-            {
-                var current = new int[maxCapacity];
-                var previous = GetKnapsackAt(index >> 1);
+            int pow;
+            for (pow = 0; (1 << pow) < n; pow++) { }
+            return (pow + 1) / 2 + (pow >= 5 ? 1 : 0);
+        }
 
-                for (int w = 0; w < current.Length; w++)
+        void Initialize(int halfN)
+        {
+            _values = new int[halfN, maxCapacity + 1];
+
+            for (int i = 1; i < halfN; i++)
+            {
+                for (int w = 0; w <= maxCapacity; w++)
                 {
-                    current[w] = Math.Max(previous[w], current[w]);
-                    var nextWeight = w + _goods[index].Weight;
-                    if (nextWeight < current.Length)
+                    AlgorithmHelpers.UpdateWhenLarge(ref _values[i, w], _values[i >> 1, w]);
+
+                    var nextWeight = w + _goods[i].Weight;
+                    if (nextWeight <= maxCapacity)
                     {
-                        current[nextWeight] = Math.Max(current[nextWeight], previous[w] + _goods[index].Value);
+                        AlgorithmHelpers.UpdateWhenLarge(ref _values[i, nextWeight], _values[i >> 1, w] + _goods[i].Value);
                     }
                 }
-                _knapsack[index] = current;
             }
+        }
 
-            return _knapsack[index];
+        int GetValueAt(int index, int capacity)
+        {
+            if (index < _values.GetLength(0))
+            {
+                return _values[index, capacity];
+            }
+            else
+            {
+                var nextIndex = index >> 1;
+                var value = 0;
+                AlgorithmHelpers.UpdateWhenLarge(ref value, GetValueAt(nextIndex, capacity));
+                var nextCapacity = capacity - _goods[index].Weight;
+                if (nextCapacity >= 0)
+                {
+                    AlgorithmHelpers.UpdateWhenLarge(ref value, GetValueAt(nextIndex, nextCapacity) + _goods[index].Value);
+                }
+                return value;
+            }
         }
 
         struct Goods

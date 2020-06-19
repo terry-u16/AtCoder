@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kujikatsu005", "Kujikatsu005\Kujikatsu005\Kujikatsu005.csproj", "{D75C8EE4-9827-4ED0-AB06-D2B944836D47}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kujikatsu005.Test", "Kujikatsu005\Kujikatsu005.Test\Kujikatsu005.Test.csproj", "{731DBA65-89A7-4ECC-B4DB-B5EF420CC1C3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D75C8EE4-9827-4ED0-AB06-D2B944836D47}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D75C8EE4-9827-4ED0-AB06-D2B944836D47}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D75C8EE4-9827-4ED0-AB06-D2B944836D47}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D75C8EE4-9827-4ED0-AB06-D2B944836D47}.Release|Any CPU.Build.0 = Release|Any CPU
+		{731DBA65-89A7-4ECC-B4DB-B5EF420CC1C3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{731DBA65-89A7-4ECC-B4DB-B5EF420CC1C3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{731DBA65-89A7-4ECC-B4DB-B5EF420CC1C3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{731DBA65-89A7-4ECC-B4DB-B5EF420CC1C3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1A94505F-2FDB-4AE0-9FAF-B1FBF7A4550C}
+	EndGlobalSection
+EndGlobal

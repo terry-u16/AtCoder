@@ -15,20 +15,24 @@ namespace AtCoderGrandContest046.Questions
     {
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
-            const int mod = 998244353;
+            Modular.Mod = 998244353;
             var (initialHeight, initialWidth, lastHeight, lastWidth) = inputStream.ReadValue<int, int, int, int>();
-            var counts = new Modular[lastHeight + 1, lastWidth + 1].SetAll((r, c) => new Modular(0, mod));
-            var minuses = new Modular[lastHeight + 1, lastWidth + 1].SetAll((r, c) => new Modular(0, mod));
+            var counts = new Modular[lastHeight + 1, lastWidth + 1];
+            var minuses = new Modular[lastHeight + 1, lastWidth + 1];
 
-            counts[initialHeight + 1, initialWidth] = new Modular(initialWidth, mod);
-            counts[initialHeight, initialWidth + 1] = new Modular(initialHeight, mod);
+            counts[initialHeight, initialWidth] = Modular.One;
 
-            for (int row = initialHeight + 1; row <= lastHeight; row++)
+            for (int row = initialHeight; row <= lastHeight; row++)
             {
-                for (int column = initialWidth + 1; column <= lastWidth; column++)
+                for (int column = initialWidth; column <= lastWidth; column++)
                 {
-                    var add = new Modular(row, mod) * counts[row, column - 1] + new Modular(column, mod) * counts[row - 1, column];
-                    counts[row, column] = add;
+                    if (row == initialHeight && column == initialWidth)
+                    {
+                        continue;
+                    }
+
+                    counts[row, column] = row * counts[row, column - 1] + column * counts[row - 1, column]
+                        - (row - 1) * (column - 1) * counts[row - 1, column - 1];
                 }
             }
 

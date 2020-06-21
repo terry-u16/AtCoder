@@ -20,12 +20,7 @@ namespace AtCoderBeginnerContest171.Questions
             var n = inputStream.ReadInt();
             var a = inputStream.ReadIntArray();
 
-            int all = 0;
-            foreach (var ai in a)
-            {
-                all ^= ai;
-            }
-
+            int all = a.Aggregate(0, (sum, ai) => sum ^ ai);
             yield return string.Join(" ", a.Select(i => i ^ all));
         }
     }

@@ -18,17 +18,17 @@ namespace AtCoderBeginnerContest171.Questions
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
             var n = inputStream.ReadLong();
-            var name = new List<long>();
+            var name = new Stack<long>();
 
-            do
+            while (n > 0)
             {
                 n--;
                 var c = n % 26;
-                name.Add(c);
+                name.Push(c);
                 n /= 26;
-            } while (n > 0);
+            }
 
-            yield return string.Concat(name.Select(c => (char)(c + 'a')).Reverse());
+            yield return string.Concat(name.Select(c => (char)(c + 'a')));
         }
     }
 }

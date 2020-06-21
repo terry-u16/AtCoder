@@ -19,9 +19,16 @@ namespace AtCoderBeginnerContest171.Questions
         {
             var k = inputStream.ReadInt();
             var s = inputStream.ReadLine();
+
+            var sum = Modular.Zero;
             Modular.InitializeCombinationTable(2500000);
-            var count = Modular.Pow(26, k + s.Length) - Modular.CombinationWithRepetition(s.Length, k + s.Length) * Modular.Pow(26, k);
-            yield return count.Value;
+
+            for (int taken = 0; taken <= k; taken++)
+            {
+                sum += Modular.CombinationWithRepetition(taken + 1, s.Length - 1) * Modular.Pow(25, taken) * Modular.Pow(26, k - taken);
+            }
+
+            yield return sum.Value;
         }
     }
 }

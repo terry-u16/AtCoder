@@ -17,17 +17,23 @@ namespace AtCoderBeginnerContest172.Questions
     {
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
-            Modular.InitializeCombinationTable(2_000_000);
+            Modular.InitializeCombinationTable(1_000_000);
             var (n, m) = inputStream.ReadValue<int, int>();
-            var countA = Modular.Permutation(m, n);
-            var countB = Modular.Zero;
+            var count = Modular.Zero;
 
-            for (int duplicated = Math.Max(0, 2 * n - m); duplicated <= n; duplicated++)
+            if (n == 1 && m == 1)
             {
-                countB += Modular.Permutation(n, duplicated) * Modular.Permutation(m - duplicated, n - duplicated);
+                yield return 0;
+                yield break;
             }
 
-            yield return (countA * countB).Value;
+            for (int duplicated = 0; duplicated <= n; duplicated++)
+            {
+                var sign = (duplicated & 1) == 0 ? 1 : -1;
+                count += sign * Modular.Combination(n, duplicated) * Modular.Permutation(m, duplicated) * Modular.Pow(Modular.Permutation(m - duplicated, n - duplicated), 2);
+            }
+
+            yield return count.Value;
         }
     }
 }

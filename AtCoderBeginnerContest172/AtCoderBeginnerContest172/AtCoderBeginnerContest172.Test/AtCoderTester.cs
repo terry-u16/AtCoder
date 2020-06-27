@@ -77,6 +77,7 @@ apple", @"0")]
         [InlineData(@"2 2", @"2")]
         [InlineData(@"2 3", @"18")]
         [InlineData(@"141421 356237", @"881613484")]
+        [InlineData(@"1 1", @"0")]
         public void QuestionETest(string input, string output)
         {
             var outputs = SplitByNewLine(output);

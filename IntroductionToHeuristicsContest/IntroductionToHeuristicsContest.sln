@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntroductionToHeuristicsContest", "IntroductionToHeuristicsContest\IntroductionToHeuristicsContest\IntroductionToHeuristicsContest.csproj", "{84D95E5C-39C3-4D1F-9820-B0F514A4B32F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntroductionToHeuristicsContest.Test", "IntroductionToHeuristicsContest\IntroductionToHeuristicsContest.Test\IntroductionToHeuristicsContest.Test.csproj", "{E287112A-B551-4CE3-B3CB-991BFEFF6D55}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{84D95E5C-39C3-4D1F-9820-B0F514A4B32F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84D95E5C-39C3-4D1F-9820-B0F514A4B32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84D95E5C-39C3-4D1F-9820-B0F514A4B32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84D95E5C-39C3-4D1F-9820-B0F514A4B32F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E287112A-B551-4CE3-B3CB-991BFEFF6D55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E287112A-B551-4CE3-B3CB-991BFEFF6D55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E287112A-B551-4CE3-B3CB-991BFEFF6D55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E287112A-B551-4CE3-B3CB-991BFEFF6D55}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0E6BC02E-DA75-42CD-9E33-A8881A5D5049}
+	EndGlobalSection
+EndGlobal

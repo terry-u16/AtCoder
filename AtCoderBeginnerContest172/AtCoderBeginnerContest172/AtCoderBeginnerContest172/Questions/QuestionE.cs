@@ -21,12 +21,6 @@ namespace AtCoderBeginnerContest172.Questions
             var (n, m) = inputStream.ReadValue<int, int>();
             var count = Modular.Zero;
 
-            if (n == 1 && m == 1)
-            {
-                yield return 0;
-                yield break;
-            }
-
             for (int duplicated = 0; duplicated <= n; duplicated++)
             {
                 var sign = (duplicated & 1) == 0 ? 1 : -1;

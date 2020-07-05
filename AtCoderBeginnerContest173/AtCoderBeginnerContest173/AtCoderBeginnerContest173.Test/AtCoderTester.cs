@@ -186,8 +186,22 @@ RE x 0")]
             Assert.Equal(outputs, answers);
         }
 
-        //[Theory]
-        //[InlineData(@"", @"")]
+        [Theory]
+        [InlineData(@"3
+1 3
+2 3", @"7")]
+        [InlineData(@"2
+1 2", @"3")]
+        [InlineData(@"10
+5 3
+5 7
+8 9
+1 9
+9 10
+8 4
+7 4
+6 10
+7 2", @"113")]
         public void QuestionFTest(string input, string output)
         {
             var outputs = SplitByNewLine(output);

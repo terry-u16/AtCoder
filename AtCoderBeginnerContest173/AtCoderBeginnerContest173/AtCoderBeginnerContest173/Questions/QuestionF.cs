@@ -17,7 +17,33 @@ namespace AtCoderBeginnerContest173.Questions
     {
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
-            throw new NotImplementedException();
+            long n = inputStream.ReadInt();
+            long nodes = 0;
+            long edges = 0;
+
+            for (long length = 1; length <= n; length++)
+            {
+                nodes += length * (n - length + 1);
+            }
+
+            for (int i = 0; i < n - 1; i++)
+            {
+                var (u, v) = inputStream.ReadValue<long, long>();
+                if (u > v)
+                {
+                    Swap(ref u, ref v);
+                }
+                edges += u * (n - v + 1);
+            }
+
+            yield return nodes - edges;
+        }
+
+        void Swap<T>(ref T a, ref T b)
+        {
+            var temp = a;
+            a = b;
+            b = temp;
         }
     }
 }

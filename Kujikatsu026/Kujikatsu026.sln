@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kujikatsu026", "Kujikatsu026\Kujikatsu026\Kujikatsu026.csproj", "{938B2593-EF0D-4CD9-BE66-9D4AF3368A10}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kujikatsu026.Test", "Kujikatsu026\Kujikatsu026.Test\Kujikatsu026.Test.csproj", "{A8A1A1D9-3D6D-4BD2-B146-C6D15165D937}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{938B2593-EF0D-4CD9-BE66-9D4AF3368A10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{938B2593-EF0D-4CD9-BE66-9D4AF3368A10}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{938B2593-EF0D-4CD9-BE66-9D4AF3368A10}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{938B2593-EF0D-4CD9-BE66-9D4AF3368A10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8A1A1D9-3D6D-4BD2-B146-C6D15165D937}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8A1A1D9-3D6D-4BD2-B146-C6D15165D937}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8A1A1D9-3D6D-4BD2-B146-C6D15165D937}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8A1A1D9-3D6D-4BD2-B146-C6D15165D937}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5A5E7A92-9890-476A-A340-DA2741F7A692}
+	EndGlobalSection
+EndGlobal

@@ -26,10 +26,10 @@ namespace TestCaseGenerator
 
         static void WriteInput(TextWriter writer)
         {
-            const int N = 100000;
+            const int N = 1000000;
             
-            writer.WriteLine($"{N} {(long)N * N - 1}");
-            writer.WriteLine(string.Join(" ", Enumerable.Repeat(100000, N)));
+            writer.WriteLine(N);
+            writer.WriteLine(string.Concat(Enumerable.Repeat('a', N)));
         }
 
         static void WriteOutput(TextWriter writer)

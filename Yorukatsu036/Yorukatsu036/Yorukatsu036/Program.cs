@@ -13,8 +13,8 @@ namespace Yorukatsu036
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionF();    // 問題に合わせて書き換え
-            var answers = question.Solve(Console.In);
+            IAtCoderQuestion question = new QuestionF_RerootingClass();    // 問題に合わせて書き換え
+            var answers = question.Solve(new StreamReader(@"C:\Users\amats\Downloads\line_01.txt")).ToArray();
             var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };
             Console.SetOut(writer);
             foreach (var answer in answers)

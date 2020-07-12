@@ -50,7 +50,7 @@ namespace Aising2020.Questions
                 {
                     while (minusWainting.Count > 0 && minusWainting.Peek().K == i)
                         minusSelected.Enqueue(minusWainting.Dequeue());
-                    while (minusSelected.Count > n - i + 1)
+                    while (minusSelected.Count > n - 1 - i)
                         minusSelected.Dequeue();
                 }
 

@@ -18,7 +18,7 @@ namespace Kujikatsu031.Questions
     /// </summary>
     public class QuestionG : AtCoderQuestionBase
     {
-        const int MaxBit = 50;
+        const int MaxBit = 51;
 
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
@@ -81,29 +81,23 @@ namespace Kujikatsu031.Questions
             {
                 return true;
             }
+            else if (a < b)
+            {
+                return false;
+            }
             else
             {
-                var ok = false;
-                for (int toAdd = b + 1; toAdd < MaxBit && !ok; toAdd++)
+                for (int div = a; div >= b + 1; div--)
                 {
-                    if (((1L << toAdd) & flags) > 0)
+                    if (((1L << div) & flags) > 0)
                     {
-                        for (int i = 1; !ok; i++)
+                        if (Check(a % div, b, flags))
                         {
-                            var next = b + toAdd * i;
-                            if (next <= a)
-                            {
-                                ok |= Check(a, next, flags);
-                            }
-                            else
-                            {
-                                break;
-                            }
+                            return true;
                         }
                     }
                 }
-
-                return ok;
+                return false;
             }
         }
     }

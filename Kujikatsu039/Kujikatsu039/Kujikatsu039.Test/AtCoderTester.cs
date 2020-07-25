@@ -11,18 +11,6 @@ namespace Kujikatsu039.Test
     {
         //[Theory]
         //[InlineData(@"", @"")]
-        public void QuestionATest(string input, string output)
-        {
-            var outputs = SplitByNewLine(output);
-            IAtCoderQuestion question = new QuestionA();
-
-            var answers = question.Solve(input).Select(o => o.ToString()).ToArray();
-
-            Assert.Equal(outputs, answers);
-        }
-
-        //[Theory]
-        //[InlineData(@"", @"")]
         public void QuestionBTest(string input, string output)
         {
             var outputs = SplitByNewLine(output);
@@ -112,6 +100,20 @@ namespace Kujikatsu039.Test
             var answers = question.Solve(input).Select(o => o.ToString()).ToArray();
 
             AssertNearlyEqual(outputs, answers);
+        }
+
+        [Theory]
+        [InlineData(@"atcoderregularcontest", @"b")]
+        [InlineData(@"abcdefghijklmnopqrstuvwxyz", @"aa")]
+        [InlineData(@"frqnvhydscshfcgdemurlfrutcpzhopfotpifgepnqjxupnskapziurswqazdwnwbgdhyktfyhqqxpoidfhjdakoxraiedxskywuepzfniuyskxiyjpjlxuqnfgmnjcvtlpnclfkpervxmdbvrbrdn", @"aca")]
+        public void QuestionGTest(string input, string output)
+        {
+            var outputs = SplitByNewLine(output);
+            IAtCoderQuestion question = new QuestionG();
+
+            var answers = question.Solve(input).Select(o => o.ToString()).ToArray();
+
+            Assert.Equal(outputs, answers);
         }
 
         void AssertNearlyEqual(IEnumerable<string> expected, IEnumerable<string> actual, double acceptableError = 1e-6)

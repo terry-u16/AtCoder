@@ -18,7 +18,7 @@ namespace Kujikatsu039
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionF();
+            IAtCoderQuestion question = new QuestionG();
             var answers = question.Solve(Console.In);
 
             var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };

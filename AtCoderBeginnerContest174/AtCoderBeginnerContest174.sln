@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtCoderBeginnerContest174", "AtCoderBeginnerContest174\AtCoderBeginnerContest174\AtCoderBeginnerContest174.csproj", "{4F288340-4C3A-4D46-83F3-8820CD9E72DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtCoderBeginnerContest174.Test", "AtCoderBeginnerContest174\AtCoderBeginnerContest174.Test\AtCoderBeginnerContest174.Test.csproj", "{8D9EE80C-4908-4011-A49D-15E64E5E238C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4F288340-4C3A-4D46-83F3-8820CD9E72DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F288340-4C3A-4D46-83F3-8820CD9E72DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F288340-4C3A-4D46-83F3-8820CD9E72DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F288340-4C3A-4D46-83F3-8820CD9E72DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D9EE80C-4908-4011-A49D-15E64E5E238C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D9EE80C-4908-4011-A49D-15E64E5E238C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D9EE80C-4908-4011-A49D-15E64E5E238C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D9EE80C-4908-4011-A49D-15E64E5E238C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C8914738-7A54-44C5-8F1E-E79B224FA5E5}
+	EndGlobalSection
+EndGlobal

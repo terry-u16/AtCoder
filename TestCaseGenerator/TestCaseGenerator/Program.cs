@@ -30,8 +30,11 @@ namespace TestCaseGenerator
 
             var rand = new Random();
 
-            writer.WriteLine(N);
-            writer.WriteLine(string.Concat(Enumerable.Repeat(1, N)));
+            writer.WriteLine($"{N} {N}");
+            for (int i = 0; i < N; i++)
+            {
+                writer.WriteLine("1 5000 1000000000");
+            }
         }
 
         static void WriteOutput(TextWriter writer)

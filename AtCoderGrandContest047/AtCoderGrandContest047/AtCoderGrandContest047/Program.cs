@@ -18,7 +18,7 @@ namespace AtCoderGrandContest047
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionE();
+            IAtCoderQuestion question = new QuestionB();
             var answers = question.Solve(Console.In);
 
             var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };

@@ -102,8 +102,15 @@ atcoder", @"6")]
             Assert.Equal(outputs, answers);
         }
 
-        //[Theory]
-        //[InlineData(@"", @"")]
+        [Theory]
+        [InlineData(@"4 4
+2 4
+1 1
+2 3
+2 4", @"1
+3
+6
+-1")]
         public void QuestionFTest(string input, string output)
         {
             var outputs = SplitByNewLine(output);

@@ -14,7 +14,7 @@ namespace Training20200907
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionA();
+            IAtCoderQuestion question = new QuestionB();
             var answers = question.Solve(Console.In);
 
             var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };

@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using AtCoderLibraryPracticeContest.Algorithms;
-using AtCoderLibraryPracticeContest.Collections;
 using AtCoderLibraryPracticeContest.Extensions;
-using AtCoderLibraryPracticeContest.Numerics;
 using AtCoderLibraryPracticeContest.Questions;
+using System.Diagnostics;
+using AtCoder;
+using AtCoder.Internal;
+using System.Runtime.Intrinsics.X86;
+using System.Numerics;
 
 namespace AtCoderLibraryPracticeContest.Questions
 {

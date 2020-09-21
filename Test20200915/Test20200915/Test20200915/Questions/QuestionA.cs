@@ -23,10 +23,10 @@ namespace Test20200915.Questions
         public override IEnumerable<object> Solve(TextReader inputStream)
         {
             using var io = new IOManager(Console.OpenStandardInput(), Console.OpenStandardOutput());
-            var n = io.ReadInt();
-            var m = io.ReadInt();
-            var a = io.ReadIntArray(n);
-            var b = io.ReadIntArray(m);
+            //var n = io.ReadInt();
+            //var m = io.ReadInt();
+            var a = new int[100000];// io.ReadIntArray(n);
+            var b = new int[100000];// io.ReadIntArray(m);
             var c = AtCoder.Math.Convolution(a, b);
             io.WriteLine(c);
 
@@ -38,6 +38,7 @@ namespace Test20200915.Questions
             private readonly StreamReader _reader;
             private readonly StreamWriter _writer;
             private bool _disposedValue;
+            private Queue<ReadOnlyMemory<char>> _stringQueue;
 
             const char ValidFirstChar = '!';
             const char ValidLastChar = '~';
@@ -46,33 +47,39 @@ namespace Test20200915.Questions
             {
                 _reader = new StreamReader(input);
                 _writer = new StreamWriter(output) { AutoFlush = false };
+                _stringQueue = new Queue<ReadOnlyMemory<char>>();
             }
 
-            public char ReadChar()
+            public ReadOnlySpan<char> ReadCharSpan()
             {
-                Skip();
-                return (char)_reader.Read();
-            }
-
-            public string ReadString()
-            {
-                var builder = new StringBuilder();
-                int c;
-                Skip();
-
-                while (IsValidChar(c = _reader.Read()))
+                while (_stringQueue.Count == 0)
                 {
-                    builder.Append((char)c);
+                    var line = _reader.ReadLine().AsMemory().Trim();
+                    var s = line.Span;
+
+                    if (s.Length > 0)
+                    {
+                        var begin = 0;
+                        for (int i = 0; i < s.Length; i++)
+                        {
+                            if (begin < 0 && IsValidChar(s[i]))
+                            {
+                                begin = i;
+                            }
+                            else if (!IsValidChar(s[i]))
+                            {
+                                _stringQueue.Enqueue(line[begin..i]);
+                                begin = -1;
+                            }
+                        }
+                        _stringQueue.Enqueue(line[begin..line.Length]);
+                    }
                 }
 
-                return builder.ToString();
+                return _stringQueue.Dequeue().Span;
             }
 
-            public string ReadLine()
-            {
-                Skip();
-                return _reader.ReadLine();
-            }
+            public string ReadString() => ReadCharSpan().ToString();
 
             public int ReadInt() => (int)ReadLong();
 
@@ -80,28 +87,25 @@ namespace Test20200915.Questions
             {
                 long result = 0;
                 bool isPositive = true;
-                Skip();
-                int c = _reader.Read();
 
-                if (c == '-')
+                int i = 0;
+                var s = ReadCharSpan();
+                if (s[i] == '-')
                 {
                     isPositive = false;
-                    c = _reader.Read();
+                    i++;
                 }
 
-                do
+                while (i < s.Length)
                 {
-                    result = result * 10 + (c - '0');
-                } while (IsValidChar(c = _reader.Read()));
+                    result = result * 10 + (s[i++] - '0');
+                }
 
                 return isPositive ? result : -result;
             }
 
-            public double ReadDouble() => double.Parse(ReadString());
-            public decimal ReadDecimal() => decimal.Parse(ReadString());
-
-            // C#のバージョンが上がったらね……。
-            // private Span<char> ReadCharSpan(Span<char> buffer)
+            public double ReadDouble() => double.Parse(ReadCharSpan());
+            public decimal ReadDecimal() => decimal.Parse(ReadCharSpan());
 
             public int[] ReadIntArray(int n)
             {
@@ -145,34 +149,26 @@ namespace Test20200915.Questions
 
             public void WriteLine<T>(T value) => _writer.WriteLine(value.ToString());
 
-            public void WriteLine<T>(T[] value, char delimiter = ' ')
+            public void WriteLine<T>(IEnumerable<T> values, char separator)
             {
-                for (int i = 0; i < value.Length - 1; i++)
+                var e = values.GetEnumerator();
+                if (e.MoveNext())
                 {
-                    _writer.Write(value[i].ToString());
-                    _writer.Write(delimiter);
+                    _writer.Write(e.Current.ToString());
+
+                    while (e.MoveNext())
+                    {
+                        _writer.Write(separator);
+                        _writer.Write(e.Current.ToString());
+                    }
                 }
-                _writer.WriteLine(value[value.Length - 1].ToString());
+
+                _writer.WriteLine();
             }
 
             public void Flush() => _writer.Flush();
 
-            private static bool IsValidChar(int c) => ValidFirstChar <= c && c <= ValidLastChar;
-
-            private static void ThrowInvalidOperationException(string s) => throw new InvalidOperationException();
-
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            private void Skip()
-            {
-                while (!IsValidChar(_reader.Peek()))
-                {
-                    if (_reader.EndOfStream)
-                    {
-                        ThrowInvalidOperationException("End of file.");
-                    }
-                    _reader.Read();
-                }
-            }
+            private static bool IsValidChar(char c) => ValidFirstChar <= c && c <= ValidLastChar;
 
             protected virtual void Dispose(bool disposing)
             {

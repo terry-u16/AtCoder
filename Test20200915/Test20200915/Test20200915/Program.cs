@@ -26,6 +26,7 @@ namespace AtCoder.Internal
         /// </summary>
         private static StaticModInt<T>[] sumIE = CalcurateSumIE();
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void Calculate(Span<StaticModInt<T>> a)
         {
             var n = a.Length;
@@ -38,7 +39,7 @@ namespace AtCoder.Internal
 
                 // ブロック数
                 int p = 1 << (h - ph);
-
+                System.Diagnostics.Debugger.Break();
                 var now = StaticModInt<T>.Raw(1);
 
                 // 各ブロックの s 段目
@@ -46,12 +47,15 @@ namespace AtCoder.Internal
                 {
                     int offset = s << (h - ph + 1);
 
+                    var ls = a.Slice(offset, p);
+                    var rs = a.Slice(offset + p, p);
+
                     for (int i = 0; i < p; i++)
                     {
-                        var l = a[i + offset];
-                        var r = a[i + offset + p] * now;
-                        a[i + offset] = l + r;
-                        a[i + offset + p] = l - r;
+                        var l = ls[i];
+                        var r = rs[i] * now;
+                        ls[i] = l + r;
+                        rs[i] = l - r;
                     }
                     now *= sumE[InternalBit.BSF(~(uint)s)];
                 }
@@ -294,6 +298,7 @@ namespace AtCoder
             return new StaticModInt<T>(v - 1);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StaticModInt<T> operator +(StaticModInt<T> lhs, StaticModInt<T> rhs)
         {
             var v = lhs._v + rhs._v;
@@ -304,6 +309,7 @@ namespace AtCoder
             return new StaticModInt<T>(v);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StaticModInt<T> operator -(StaticModInt<T> lhs, StaticModInt<T> rhs)
         {
             unchecked
@@ -317,6 +323,7 @@ namespace AtCoder
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StaticModInt<T> operator *(StaticModInt<T> lhs, StaticModInt<T> rhs)
         {
             return new StaticModInt<T>((uint)((ulong)lhs._v * rhs._v % default(T).Mod));

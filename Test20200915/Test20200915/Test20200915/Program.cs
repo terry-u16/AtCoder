@@ -10,7 +10,575 @@ using Test20200915.Questions;
 using System.Diagnostics;
 using System.Runtime.Intrinsics.X86;
 using System.Numerics;
+using AtCoder.Internal;
 
+namespace AtCoder.Internal
+{
+    public static class Butterfly<T> where T : struct, IStaticMod
+    {
+        /// <summary>
+        /// sumE[i] = ies[0] * ... * ies[i - 1] * es[i]
+        /// </summary>
+        private static StaticModInt<T>[] sumE = CalcurateSumE();
+
+        /// <summary>
+        /// sumIE[i] = es[0] * ... * es[i - 1] * ies[i]
+        /// </summary>
+        private static StaticModInt<T>[] sumIE = CalcurateSumIE();
+
+        public static void Calculate(Span<StaticModInt<T>> a)
+        {
+            var n = a.Length;
+            var h = InternalMath.CeilPow2(n);
+
+            for (int ph = 1; ph <= h; ph++)
+            {
+                // ブロックサイズの半分
+                int w = 1 << (ph - 1);
+
+                // ブロック数
+                int p = 1 << (h - ph);
+
+                var now = StaticModInt<T>.Raw(1);
+
+                // 各ブロックの s 段目
+                for (int s = 0; s < w; s++)
+                {
+                    int offset = s << (h - ph + 1);
+
+                    for (int i = 0; i < p; i++)
+                    {
+                        var l = a[i + offset];
+                        var r = a[i + offset + p] * now;
+                        a[i + offset] = l + r;
+                        a[i + offset + p] = l - r;
+                    }
+                    now *= sumE[InternalBit.BSF(~(uint)s)];
+                }
+            }
+        }
+
+        public static void CalculateInv(Span<StaticModInt<T>> a)
+        {
+            var n = a.Length;
+            var h = InternalMath.CeilPow2(n);
+
+            for (int ph = h; ph >= 1; ph--)
+            {
+                // ブロックサイズの半分
+                int w = 1 << (ph - 1);
+
+                // ブロック数
+                int p = 1 << (h - ph);
+
+                var iNow = StaticModInt<T>.Raw(1);
+
+                // 各ブロックの s 段目
+                for (int s = 0; s < w; s++)
+                {
+                    int offset = s << (h - ph + 1);
+
+                    for (int i = 0; i < p; i++)
+                    {
+                        var l = a[i + offset];
+                        var r = a[i + offset + p];
+                        a[i + offset] = l + r;
+                        a[i + offset + p] = StaticModInt<T>.Raw(
+                            unchecked((int)((ulong)(default(T).Mod + l.Value - r.Value) * (ulong)iNow.Value % default(T).Mod)));
+                    }
+                    iNow *= sumIE[InternalBit.BSF(~(uint)s)];
+                }
+            }
+        }
+
+        private static StaticModInt<T>[] CalcurateSumE()
+        {
+            int g = InternalMath.PrimitiveRoot((int)default(T).Mod);
+            int cnt2 = InternalBit.BSF(default(T).Mod - 1);
+            var e = new StaticModInt<T>(g).Pow((default(T).Mod - 1) >> cnt2);
+            var ie = e.Inv();
+
+            var sumE = new StaticModInt<T>[cnt2 - 2];
+
+            // es[i]^(2^(2+i)) == 1
+            Span<StaticModInt<T>> es = stackalloc StaticModInt<T>[cnt2 - 1];
+            Span<StaticModInt<T>> ies = stackalloc StaticModInt<T>[cnt2 - 1];
+
+            for (int i = es.Length - 1; i >= 0; i--)
+            {
+                // e^(2^(2+i)) == 1
+                es[i] = e;
+                ies[i] = ie;
+                e *= e;
+                ie *= ie;
+            }
+
+            var now = StaticModInt<T>.Raw(1);
+            for (int i = 0; i < sumE.Length; i++)
+            {
+                sumE[i] = es[i] * now;
+                now *= ies[i];
+            }
+
+            return sumE;
+        }
+
+        private static StaticModInt<T>[] CalcurateSumIE()
+        {
+            int g = InternalMath.PrimitiveRoot((int)default(T).Mod);
+            int cnt2 = InternalBit.BSF(default(T).Mod - 1);
+            var e = new StaticModInt<T>(g).Pow((default(T).Mod - 1) >> cnt2);
+            var ie = e.Inv();
+
+            var sumIE = new StaticModInt<T>[cnt2 - 2];
+
+            // es[i]^(2^(2+i)) == 1
+            Span<StaticModInt<T>> es = stackalloc StaticModInt<T>[cnt2 - 1];
+            Span<StaticModInt<T>> ies = stackalloc StaticModInt<T>[cnt2 - 1];
+
+            for (int i = es.Length - 1; i >= 0; i--)
+            {
+                // e^(2^(2+i)) == 1
+                es[i] = e;
+                ies[i] = ie;
+                e *= e;
+                ie *= ie;
+            }
+
+            var now = StaticModInt<T>.Raw(1);
+            for (int i = 0; i < sumIE.Length; i++)
+            {
+                sumIE[i] = ies[i] * now;
+                now *= es[i];
+            }
+
+            return sumIE;
+        }
+    }
+}
+
+namespace AtCoder
+{
+    /// <summary>
+    /// コンパイル時に決定する mod を表します。
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// public readonly struct Mod1000000009 : IStaticMod
+    /// {
+    ///     public uint Mod => 1000000009;
+    ///     public bool IsPrime => true;
+    /// }
+    /// </code>
+    /// </example>
+    public interface IStaticMod
+    {
+        /// <summary>
+        /// mod を取得します。
+        /// </summary>
+        uint Mod { get; }
+
+        /// <summary>
+        /// mod が素数であるか識別します。
+        /// </summary>
+        bool IsPrime { get; }
+    }
+
+    public readonly struct Mod1000000007 : IStaticMod
+    {
+        public uint Mod => 1000000007;
+        public bool IsPrime => true;
+    }
+
+    public readonly struct Mod998244353 : IStaticMod
+    {
+        public uint Mod => 998244353;
+        public bool IsPrime => true;
+    }
+
+    /// <summary>
+    /// 実行時に決定する mod の ID を表します。
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// public readonly struct ModID123 : IDynamicModID { }
+    /// </code>
+    /// </example>
+    public interface IDynamicModID { }
+
+    public readonly struct ModID0 : IDynamicModID { }
+    public readonly struct ModID1 : IDynamicModID { }
+    public readonly struct ModID2 : IDynamicModID { }
+
+    /// <summary>
+    /// 四則演算時に自動で mod を取る整数型。mod の値はコンパイル時に決定している必要があります。
+    /// </summary>
+    /// <typeparam name="T">定数 mod を表す構造体</typeparam>
+    /// <example>
+    /// <code>
+    /// using ModInt = AtCoder.StaticModInt&lt;AtCoder.Mod1000000007&gt;;
+    ///
+    /// void SomeMethod()
+    /// {
+    ///     var m = new ModInt(1);
+    ///     m -= 2;
+    ///     Console.WriteLine(m);   // 1000000006
+    /// }
+    /// </code>
+    /// </example>
+    public readonly struct StaticModInt<T> where T : struct, IStaticMod
+    {
+        private readonly uint _v;
+
+        /// <summary>
+        /// 格納されている値を返します。
+        /// </summary>
+        public int Value => (int)_v;
+
+        /// <summary>
+        /// mod を返します。
+        /// </summary>
+        public static int Mod => (int)default(T).Mod;
+
+        /// <summary>
+        /// <paramref name="v"/> に対して mod を取らずに StaticModInt&lt;<typeparamref name="T"/>&gt; 型のインスタンスを生成します。
+        /// </summary>
+        /// <remarks>
+        /// <para>定数倍高速化のための関数です。 <paramref name="v"/> に 0 未満または mod 以上の値を入れた場合の挙動は未定義です。</para>
+        /// <para>制約: 0≤|<paramref name="v"/>|&lt;mod</para>
+        /// </remarks>
+        public static StaticModInt<T> Raw(int v)
+        {
+            var u = unchecked((uint)v);
+            Debug.Assert(u < Mod);
+            return new StaticModInt<T>(u);
+        }
+
+        /// <summary>
+        /// StaticModInt&lt;<typeparamref name="T"/>&gt; 型のインスタンスを生成します。
+        /// </summary>
+        /// <remarks>
+        /// <paramref name="v"/>が 0 未満、もしくは mod 以上の場合、自動で mod を取ります。
+        /// </remarks>
+        public StaticModInt(long v) : this(Round(v)) { }
+
+        private StaticModInt(uint v) => _v = v;
+
+        private static uint Round(long v)
+        {
+            var x = v % default(T).Mod;
+            if (x < 0)
+            {
+                x += default(T).Mod;
+            }
+            return (uint)x;
+        }
+
+        public static StaticModInt<T> operator ++(StaticModInt<T> value)
+        {
+            var v = value._v + 1;
+            if (v == default(T).Mod)
+            {
+                v = 0;
+            }
+            return new StaticModInt<T>(v);
+        }
+
+        public static StaticModInt<T> operator --(StaticModInt<T> value)
+        {
+            var v = value._v;
+            if (v == 0)
+            {
+                v = default(T).Mod;
+            }
+            return new StaticModInt<T>(v - 1);
+        }
+
+        public static StaticModInt<T> operator +(StaticModInt<T> lhs, StaticModInt<T> rhs)
+        {
+            var v = lhs._v + rhs._v;
+            if (v >= default(T).Mod)
+            {
+                v -= default(T).Mod;
+            }
+            return new StaticModInt<T>(v);
+        }
+
+        public static StaticModInt<T> operator -(StaticModInt<T> lhs, StaticModInt<T> rhs)
+        {
+            unchecked
+            {
+                var v = lhs._v - rhs._v;
+                if (v >= default(T).Mod)
+                {
+                    v += default(T).Mod;
+                }
+                return new StaticModInt<T>(v);
+            }
+        }
+
+        public static StaticModInt<T> operator *(StaticModInt<T> lhs, StaticModInt<T> rhs)
+        {
+            return new StaticModInt<T>((uint)((ulong)lhs._v * rhs._v % default(T).Mod));
+        }
+
+        /// <summary>
+        /// 除算を行います。
+        /// </summary>
+        /// <remarks>
+        /// <para>- 制約: <paramref name="rhs"/> に乗法の逆元が存在する。（gcd(<paramref name="rhs"/>, mod) = 1）</para>
+        /// <para>- 計算量: O(log(mod))</para>
+        /// </remarks>
+        public static StaticModInt<T> operator /(StaticModInt<T> lhs, StaticModInt<T> rhs) => lhs * rhs.Inv();
+
+        public static StaticModInt<T> operator +(StaticModInt<T> value) => value;
+        public static StaticModInt<T> operator -(StaticModInt<T> value) => new StaticModInt<T>() - value;
+        public static bool operator ==(StaticModInt<T> lhs, StaticModInt<T> rhs) => lhs._v == rhs._v;
+        public static bool operator !=(StaticModInt<T> lhs, StaticModInt<T> rhs) => lhs._v != rhs._v;
+        public static implicit operator StaticModInt<T>(int value) => new StaticModInt<T>(value);
+        public static implicit operator StaticModInt<T>(long value) => new StaticModInt<T>(value);
+
+        /// <summary>
+        /// 自身を x として、x^<paramref name="n"/> を返します。
+        /// </summary>
+        /// <remarks>
+        /// <para>制約: 0≤|<paramref name="n"/>|</para>
+        /// <para>計算量: O(log(<paramref name="n"/>))</para>
+        /// </remarks>
+        public StaticModInt<T> Pow(long n)
+        {
+            Debug.Assert(0 <= n);
+            var x = this;
+            var r = new StaticModInt<T>(1u);
+
+            while (n > 0)
+            {
+                if ((n & 1) > 0)
+                {
+                    r *= x;
+                }
+                x *= x;
+                n >>= 1;
+            }
+
+            return r;
+        }
+
+        /// <summary>
+        /// 自身を x として、 xy≡1 なる y を返します。
+        /// </summary>
+        /// <remarks>
+        /// <para>制約: gcd(x, mod) = 1</para>
+        /// </remarks>
+        public StaticModInt<T> Inv()
+        {
+            if (default(T).IsPrime)
+            {
+                Debug.Assert(_v > 0);
+                return Pow(default(T).Mod - 2);
+            }
+            else
+            {
+                var (g, x) = Internal.InternalMath.InvGCD(_v, default(T).Mod);
+                Debug.Assert(g == 1);
+                return new StaticModInt<T>(x);
+            }
+        }
+
+        public override string ToString() => _v.ToString();
+        public override bool Equals(object obj) => obj is StaticModInt<T> && this == (StaticModInt<T>)obj;
+        public override int GetHashCode() => _v.GetHashCode();
+    }
+
+    /// <summary>
+    /// 四則演算時に自動で mod を取る整数型。実行時に mod が決まる場合でも使用可能です。
+    /// </summary>
+    /// <remarks>
+    /// 使用前に DynamicModInt&lt;<typeparamref name="T"/>&gt;.Mod に mod の値を設定する必要があります。
+    /// </remarks>
+    /// <typeparam name="T">mod の ID を表す構造体</typeparam>
+    /// <example>
+    /// <code>
+    /// using AtCoder.ModInt = AtCoder.DynamicModInt&lt;AtCoder.ModID0&gt;;
+    ///
+    /// void SomeMethod()
+    /// {
+    ///     ModInt.Mod = 1000000009;
+    ///     var m = new ModInt(1);
+    ///     m -= 2;
+    ///     Console.WriteLine(m);   // 1000000008
+    /// }
+    /// </code>
+    /// </example>
+    public readonly struct DynamicModInt<T> where T : struct, IDynamicModID
+    {
+        private readonly uint _v;
+        private static Internal.Barrett bt;
+
+        /// <summary>
+        /// 格納されている値を返します。
+        /// </summary>
+        public int Value => (int)_v;
+
+        /// <summary>
+        /// mod を返します。
+        /// </summary>
+        public static int Mod
+        {
+            get => (int)bt.Mod;
+            set
+            {
+                Debug.Assert(1 <= value);
+                bt = new Internal.Barrett((uint)value);
+            }
+        }
+
+        /// <summary>
+        /// <paramref name="v"/> に対して mod を取らずに DynamicModInt&lt;<typeparamref name="T"/>&gt; 型のインスタンスを生成します。
+        /// </summary>
+        /// <remarks>
+        /// <para>定数倍高速化のための関数です。 <paramref name="v"/> に 0 未満または mod 以上の値を入れた場合の挙動は未定義です。</para>
+        /// <para>制約: 0≤|<paramref name="v"/>|&lt;mod</para>
+        /// </remarks>
+        public static DynamicModInt<T> Raw(int v)
+        {
+            var u = unchecked((uint)v);
+            Debug.Assert(bt != null, $"使用前に {nameof(DynamicModInt<T>)}<{nameof(T)}>.{nameof(Mod)} プロパティに mod の値を設定してください。");
+            Debug.Assert(u < Mod);
+            return new DynamicModInt<T>(u);
+        }
+
+        /// <summary>
+        /// DynamicModInt&lt;<typeparamref name="T"/>&gt; 型のインスタンスを生成します。
+        /// </summary>
+        /// <remarks>
+        /// <para>- 使用前に DynamicModInt&lt;<typeparamref name="T"/>&gt;.Mod に mod の値を設定する必要があります。</para>
+        /// <para>- <paramref name="v"/> が 0 未満、もしくは mod 以上の場合、自動で mod を取ります。</para>
+        /// </remarks>
+        public DynamicModInt(long v) : this(Round(v)) { }
+
+        private DynamicModInt(uint v) => _v = v;
+
+        private static uint Round(long v)
+        {
+            Debug.Assert(bt != null, $"使用前に {nameof(DynamicModInt<T>)}<{nameof(T)}>.{nameof(Mod)} プロパティに mod の値を設定してください。");
+            var x = v % bt.Mod;
+            if (x < 0)
+            {
+                x += bt.Mod;
+            }
+            return (uint)x;
+        }
+
+        public static DynamicModInt<T> operator ++(DynamicModInt<T> value)
+        {
+            var v = value._v + 1;
+            if (v == bt.Mod)
+            {
+                v = 0;
+            }
+            return new DynamicModInt<T>(v);
+        }
+
+        public static DynamicModInt<T> operator --(DynamicModInt<T> value)
+        {
+            var v = value._v;
+            if (v == 0)
+            {
+                v = bt.Mod;
+            }
+            return new DynamicModInt<T>(v - 1);
+        }
+
+        public static DynamicModInt<T> operator +(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
+        {
+            var v = lhs._v + rhs._v;
+            if (v >= bt.Mod)
+            {
+                v -= bt.Mod;
+            }
+            return new DynamicModInt<T>(v);
+        }
+
+        public static DynamicModInt<T> operator -(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
+        {
+            unchecked
+            {
+                var v = lhs._v - rhs._v;
+                if (v >= bt.Mod)
+                {
+                    v += bt.Mod;
+                }
+                return new DynamicModInt<T>(v);
+            }
+        }
+
+        public static DynamicModInt<T> operator *(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
+        {
+            uint z = bt.Mul(lhs._v, rhs._v);
+            return new DynamicModInt<T>(z);
+        }
+
+        /// <summary>
+        /// 除算を行います。
+        /// </summary>
+        /// <remarks>
+        /// <para>- 制約: <paramref name="rhs"/> に乗法の逆元が存在する。（gcd(<paramref name="rhs"/>, mod) = 1）</para>
+        /// <para>- 計算量: O(log(mod))</para>
+        /// </remarks>
+        public static DynamicModInt<T> operator /(DynamicModInt<T> lhs, DynamicModInt<T> rhs) => lhs * rhs.Inv();
+
+        public static DynamicModInt<T> operator +(DynamicModInt<T> value) => value;
+        public static DynamicModInt<T> operator -(DynamicModInt<T> value) => new DynamicModInt<T>() - value;
+        public static bool operator ==(DynamicModInt<T> lhs, DynamicModInt<T> rhs) => lhs._v == rhs._v;
+        public static bool operator !=(DynamicModInt<T> lhs, DynamicModInt<T> rhs) => lhs._v != rhs._v;
+        public static implicit operator DynamicModInt<T>(int value) => new DynamicModInt<T>(value);
+        public static implicit operator DynamicModInt<T>(long value) => new DynamicModInt<T>(value);
+
+        /// <summary>
+        /// 自身を x として、x^<paramref name="n"/> を返します。
+        /// </summary>
+        /// <remarks>
+        /// <para>制約: 0≤|<paramref name="n"/>|</para>
+        /// <para>計算量: O(log(<paramref name="n"/>))</para>
+        /// </remarks>
+        public DynamicModInt<T> Pow(long n)
+        {
+            Debug.Assert(0 <= n);
+            var x = this;
+            var r = new DynamicModInt<T>(1u);
+
+            while (n > 0)
+            {
+                if ((n & 1) > 0)
+                {
+                    r *= x;
+                }
+                x *= x;
+                n >>= 1;
+            }
+
+            return r;
+        }
+
+        /// <summary>
+        /// 自身を x として、 xy≡1 なる y を返します。
+        /// </summary>
+        /// <remarks>
+        /// <para>制約: gcd(x, mod) = 1</para>
+        /// </remarks>
+        public DynamicModInt<T> Inv()
+        {
+            var (g, x) = Internal.InternalMath.InvGCD(_v, bt.Mod);
+            Debug.Assert(g == 1);
+            return new DynamicModInt<T>(x);
+        }
+
+        public override string ToString() => _v.ToString();
+        public override bool Equals(object obj) => obj is DynamicModInt<T> && this == (DynamicModInt<T>)obj;
+        public override int GetHashCode() => _v.GetHashCode();
+    }
+}
 namespace AtCoder
 {
     public static partial class Math
@@ -495,242 +1063,6 @@ namespace AtCoder
         }
     }
 }
-namespace AtCoder.Internal
-{
-    public static class Butterfly<T> where T : struct, IStaticMod
-    {
-        /// <summary>
-        /// sumE[i] = ies[0] * ... * ies[i - 1] * es[i]
-        /// </summary>
-        private static StaticModInt<T>[] sumE;
-
-        /// <summary>
-        /// sumIE[i] = es[0] * ... * es[i - 1] * ies[i]
-        /// </summary>
-        private static StaticModInt<T>[] sumIE;
-
-        public static void Calculate(Span<StaticModInt<T>> a)
-        {
-            var n = a.Length;
-            var h = InternalMath.CeilPow2(n);
-
-            // 一度計算したらキャッシュしておく
-            sumE ??= CalcurateSumE();
-
-            for (int ph = 1; ph <= h; ph++)
-            {
-                // ブロックサイズの半分
-                int w = 1 << (ph - 1);
-
-                // ブロック数
-                int p = 1 << (h - ph);
-
-                var now = StaticModInt<T>.Raw(1);
-
-                // 各ブロックの s 段目
-                for (int s = 0; s < w; s++)
-                {
-                    int offset = s << (h - ph + 1);
-
-                    for (int i = 0; i < p; i++)
-                    {
-                        var l = a[i + offset];
-                        var r = a[i + offset + p] * now;
-                        a[i + offset] = l + r;
-                        a[i + offset + p] = l - r;
-                    }
-                    now *= sumE[InternalMath.BSF(~(uint)s)];
-                }
-            }
-
-            static StaticModInt<T>[] CalcurateSumE()
-            {
-                int g = InternalMath.PrimitiveRoot((int)default(T).Mod);
-                int cnt2 = InternalMath.BSF(default(T).Mod - 1);
-                var e = new StaticModInt<T>(g).Pow((default(T).Mod - 1) >> cnt2);
-                var ie = e.Inv();
-
-                var sumE = new StaticModInt<T>[cnt2 - 2];
-
-                // es[i]^(2^(2+i)) == 1
-                Span<StaticModInt<T>> es = stackalloc StaticModInt<T>[cnt2 - 1];
-                Span<StaticModInt<T>> ies = stackalloc StaticModInt<T>[cnt2 - 1];
-
-                for (int i = es.Length - 1; i >= 0; i--)
-                {
-                    // e^(2^(2+i)) == 1
-                    es[i] = e;
-                    ies[i] = ie;
-                    e *= e;
-                    ie *= ie;
-                }
-
-                var now = StaticModInt<T>.Raw(1);
-                for (int i = 0; i < sumE.Length; i++)
-                {
-                    sumE[i] = es[i] * now;
-                    now *= ies[i];
-                }
-
-                return sumE;
-            }
-        }
-
-        public static void CalculateInv(Span<StaticModInt<T>> a)
-        {
-            var n = a.Length;
-            var h = InternalMath.CeilPow2(n);
-
-            // 一度計算したらキャッシュしておく
-            sumIE ??= CalcurateSumIE();
-
-            for (int ph = h; ph >= 1; ph--)
-            {
-                // ブロックサイズの半分
-                int w = 1 << (ph - 1);
-
-                // ブロック数
-                int p = 1 << (h - ph);
-
-                var iNow = StaticModInt<T>.Raw(1);
-
-                // 各ブロックの s 段目
-                for (int s = 0; s < w; s++)
-                {
-                    int offset = s << (h - ph + 1);
-
-                    for (int i = 0; i < p; i++)
-                    {
-                        var l = a[i + offset];
-                        var r = a[i + offset + p];
-                        a[i + offset] = l + r;
-                        a[i + offset + p] = StaticModInt<T>.Raw(
-                            unchecked((int)((ulong)(default(T).Mod + l.Value - r.Value) * (ulong)iNow.Value % default(T).Mod)));
-                    }
-                    iNow *= sumIE[InternalMath.BSF(~(uint)s)];
-                }
-            }
-
-            static StaticModInt<T>[] CalcurateSumIE()
-            {
-                int g = InternalMath.PrimitiveRoot((int)default(T).Mod);
-                int cnt2 = InternalMath.BSF(default(T).Mod - 1);
-                var e = new StaticModInt<T>(g).Pow((default(T).Mod - 1) >> cnt2);
-                var ie = e.Inv();
-
-                var sumIE = new StaticModInt<T>[cnt2 - 2];
-
-                // es[i]^(2^(2+i)) == 1
-                Span<StaticModInt<T>> es = stackalloc StaticModInt<T>[cnt2 - 1];
-                Span<StaticModInt<T>> ies = stackalloc StaticModInt<T>[cnt2 - 1];
-
-                for (int i = es.Length - 1; i >= 0; i--)
-                {
-                    // e^(2^(2+i)) == 1
-                    es[i] = e;
-                    ies[i] = ie;
-                    e *= e;
-                    ie *= ie;
-                }
-
-                var now = StaticModInt<T>.Raw(1);
-                for (int i = 0; i < sumIE.Length; i++)
-                {
-                    sumIE[i] = ies[i] * now;
-                    now *= es[i];
-                }
-
-                return sumIE;
-            }
-        }
-    }
-}
-
-namespace AtCoder.Internal
-{
-    public static partial class InternalMath
-    {
-        /// <summary>
-        /// <paramref name="n"/> ≤ 2**x を満たす最小のx
-        /// </summary>
-        /// <remarks>
-        /// <para>制約: 0≤<paramref name="n"/></para>
-        /// </remarks>
-        public static int CeilPow2(int n)
-        {
-            var un = (uint)n;
-            if (un <= 1) return 0;
-            return BitOperations.Log2(un - 1) + 1;
-        }
-    }
-}
-
-namespace AtCoder.Internal
-{
-    public static partial class InternalMath
-    {
-        /// <summary>
-        /// (<paramref name="n"/> &amp; (1 &lt;&lt; x)) != 0 なる最小の非負整数 x を求めます。
-        /// </summary>
-        /// <remarks>
-        /// <para>BSF: Bit Scan Forward</para>
-        /// <para>制約: 1 ≤ <paramref name="n"/></para>
-        /// </remarks>
-        public static int BSF(uint n)
-        {
-            Debug.Assert(n >= 1);
-            if (Bmi1.IsSupported)
-            {
-                // O(1)
-                return (int)Bmi1.TrailingZeroCount(n);
-            }
-            else if (Popcnt.IsSupported)
-            {
-                // O(1)
-                return (int)Popcnt.PopCount(~n & (n - 1));
-            }
-            else
-            {
-                // O(logn)
-                return BitOperations.TrailingZeroCount(n);
-            }
-        }
-    }
-}
-
-namespace AtCoder.Internal
-{
-    public static partial class InternalMath
-    {
-        public static long PowMod(long x, long n, int m)
-        {
-            Debug.Assert(n >= 0);
-            Debug.Assert(m >= 1);
-
-            if (m == 1)
-            {
-                return 0;
-            }
-
-            uint _m = (uint)m;
-            ulong r = 1;
-            ulong y = (ulong)SafeMod(x, m);
-
-            while (n > 0)
-            {
-                if ((n & 1) > 0)
-                {
-                    r = (r * y) % _m;
-                }
-
-                y = (y * y) % _m;
-                n >>= 1;
-            }
-
-            return (long)r;
-        }
-    }
-}
 
 namespace AtCoder.Internal
 {
@@ -768,80 +1100,17 @@ namespace AtCoder.Internal
 {
     public static partial class InternalMath
     {
-        public static int PrimitiveRoot(int m)
+        /// <summary>
+        /// <paramref name="n"/> ≤ 2**x を満たす最小のx
+        /// </summary>
+        /// <remarks>
+        /// <para>制約: 0≤<paramref name="n"/></para>
+        /// </remarks>
+        public static int CeilPow2(int n)
         {
-            Debug.Assert(m >= 2);
-
-            return m switch
-            {
-                2 => 1,
-                167772161 => 3,
-                469762049 => 3,
-                754974721 => 11,
-                998244353 => 3,
-                _ => Calculate(m)
-            };
-
-            int Calculate(int m)
-            {
-                Span<int> divs = stackalloc int[20];
-                divs[0] = 2;
-                int cnt = 1;
-                int x = (m - 1) / 2;
-
-                while (x % 2 == 0)
-                {
-                    x >>= 1;
-                }
-
-                for (int i = 3; (long)i * i <= x; i += 2)
-                {
-                    if (x % i == 0)
-                    {
-                        divs[cnt++] = i;
-                        while (x % i == 0)
-                        {
-                            x /= i;
-                        }
-                    }
-                }
-
-                if (x > 1)
-                {
-                    divs[cnt++] = x;
-                }
-
-                for (int g = 2; ; g++)
-                {
-                    bool ok = true;
-                    for (int i = 0; i < cnt; i++)
-                    {
-                        if (PowMod(g, (m - 1) / divs[i], m) == 1)
-                        {
-                            ok = false;
-                            break;
-                        }
-                    }
-
-                    if (ok)
-                    {
-                        return g;
-                    }
-                }
-            }
-        }
-    }
-}
-
-namespace AtCoder.Internal
-{
-    public static partial class InternalMath
-    {
-        public static long SafeMod(long x, long m)
-        {
-            x %= m;
-            if (x < 0) x += m;
-            return x;
+            var un = (uint)n;
+            if (un <= 1) return 0;
+            return BitOperations.Log2(un - 1) + 1;
         }
     }
 }
@@ -889,426 +1158,161 @@ namespace AtCoder.Internal
     }
 }
 
+namespace AtCoder.Internal
+{
+    public static partial class InternalMath
+    {
+        private static readonly Dictionary<int, int> primitiveRootsCache = new Dictionary<int, int>()
+        {
+            { 2, 1 },
+            { 167772161, 3 },
+            { 469762049, 3 },
+            { 754974721, 11 },
+            { 998244353, 3 }
+        };
+
+        /// <summary>
+        /// <paramref name="m"/> の最小の原始根を求めます。
+        /// </summary>
+        /// <remarks>
+        /// 制約: <paramref name="m"/> は素数
+        /// </remarks>
+        public static int PrimitiveRoot(int m)
+        {
+            Debug.Assert(m >= 2);
+
+            if (primitiveRootsCache.TryGetValue(m, out var p))
+            {
+                return p;
+            }
+
+            return primitiveRootsCache[m] = Calculate(m);
+
+            int Calculate(int m)
+            {
+                Span<int> divs = stackalloc int[20];
+                divs[0] = 2;
+                int cnt = 1;
+                int x = (m - 1) / 2;
+
+                while (x % 2 == 0)
+                {
+                    x >>= 1;
+                }
+
+                for (int i = 3; (long)i * i <= x; i += 2)
+                {
+                    if (x % i == 0)
+                    {
+                        divs[cnt++] = i;
+                        while (x % i == 0)
+                        {
+                            x /= i;
+                        }
+                    }
+                }
+
+                if (x > 1)
+                {
+                    divs[cnt++] = x;
+                }
+
+                for (int g = 2; ; g++)
+                {
+                    bool ok = true;
+                    for (int i = 0; i < cnt; i++)
+                    {
+                        if (Math.PowMod(g, (m - 1) / divs[i], m) == 1)
+                        {
+                            ok = false;
+                            break;
+                        }
+                    }
+
+                    if (ok)
+                    {
+                        return g;
+                    }
+                }
+            }
+        }
+    }
+}
+
+namespace AtCoder.Internal
+{
+    public static partial class InternalMath
+    {
+        public static long SafeMod(long x, long m)
+        {
+            x %= m;
+            if (x < 0) x += m;
+            return x;
+        }
+    }
+}
+
 namespace AtCoder
 {
-    /// <summary>
-    /// コンパイル時に決定する mod を表します。
-    /// </summary>
-    /// <example>
-    /// <code>
-    /// public readonly struct Mod1000000009 : IStaticMod
-    /// {
-    ///     public uint Mod => 1000000009;
-    ///     public bool IsPrime => true;
-    /// }
-    /// </code>
-    /// </example>
-    public interface IStaticMod
+    public static partial class Math
     {
         /// <summary>
-        /// mod を取得します。
-        /// </summary>
-        uint Mod { get; }
-
-        /// <summary>
-        /// mod が素数であるか識別します。
-        /// </summary>
-        bool IsPrime { get; }
-    }
-
-    public readonly struct Mod1000000007 : IStaticMod
-    {
-        public uint Mod => 1000000007;
-        public bool IsPrime => true;
-    }
-
-    public readonly struct Mod998244353 : IStaticMod
-    {
-        public uint Mod => 998244353;
-        public bool IsPrime => true;
-    }
-
-    /// <summary>
-    /// 実行時に決定する mod の ID を表します。
-    /// </summary>
-    /// <example>
-    /// <code>
-    /// public readonly struct ModID123 : IDynamicModID { }
-    /// </code>
-    /// </example>
-    public interface IDynamicModID { }
-
-    public readonly struct ModID0 : IDynamicModID { }
-    public readonly struct ModID1 : IDynamicModID { }
-    public readonly struct ModID2 : IDynamicModID { }
-
-    /// <summary>
-    /// 四則演算時に自動で mod を取る整数型。mod の値はコンパイル時に決定している必要があります。
-    /// </summary>
-    /// <typeparam name="T">定数 mod を表す構造体</typeparam>
-    /// <example>
-    /// <code>
-    /// using ModInt = AtCoder.StaticModInt&lt;AtCoder.Mod1000000007&gt;;
-    ///
-    /// void SomeMethod()
-    /// {
-    ///     var m = new ModInt(1);
-    ///     m -= 2;
-    ///     Console.WriteLine(m);   // 1000000006
-    /// }
-    /// </code>
-    /// </example>
-    public readonly struct StaticModInt<T> where T : struct, IStaticMod
-    {
-        private readonly uint _v;
-
-        /// <summary>
-        /// 格納されている値を返します。
-        /// </summary>
-        public int Value => (int)_v;
-
-        /// <summary>
-        /// mod を返します。
-        /// </summary>
-        public static int Mod => (int)default(T).Mod;
-
-        /// <summary>
-        /// <paramref name="v"/> に対して mod を取らずに StaticModInt&lt;<typeparamref name="T"/>&gt; 型のインスタンスを生成します。
+        /// <paramref name="x"/>^<paramref name="n"/> mod <paramref name="m"/> を返します。
         /// </summary>
         /// <remarks>
-        /// <para>定数倍高速化のための関数です。 <paramref name="v"/> に 0 未満または mod 以上の値を入れた場合の挙動は未定義です。</para>
-        /// <para>制約: 0≤|<paramref name="v"/>|&lt;mod</para>
+        /// <para>制約: 0≤<paramref name="n"/>, 1≤<paramref name="m"/></para>
+        /// <para>計算量: O(log<paramref name="n"/>)</para>
         /// </remarks>
-        public static StaticModInt<T> Raw(int v)
+        public static long PowMod(long x, long n, int m)
         {
-            var u = unchecked((uint)v);
-            Debug.Assert(u < Mod);
-            return new StaticModInt<T>(u);
-        }
-
-        /// <summary>
-        /// StaticModInt&lt;<typeparamref name="T"/>&gt; 型のインスタンスを生成します。
-        /// </summary>
-        /// <remarks>
-        /// <paramref name="v"/>が 0 未満、もしくは mod 以上の場合、自動で mod を取ります。
-        /// </remarks>
-        public StaticModInt(long v) : this(Round(v)) { }
-
-        private StaticModInt(uint v) => _v = v;
-
-        private static uint Round(long v)
-        {
-            var x = v % default(T).Mod;
-            if (x < 0)
+            Debug.Assert(0 <= n && 1 <= m);
+            if (m == 1) return 0;
+            Barrett barrett = new Barrett((uint)m);
+            uint r = 1, y = (uint)InternalMath.SafeMod(x, m);
+            while (0 < n)
             {
-                x += default(T).Mod;
-            }
-            return (uint)x;
-        }
-
-        public static StaticModInt<T> operator ++(StaticModInt<T> value)
-        {
-            var v = value._v + 1;
-            if (v == default(T).Mod)
-            {
-                v = 0;
-            }
-            return new StaticModInt<T>(v);
-        }
-
-        public static StaticModInt<T> operator --(StaticModInt<T> value)
-        {
-            var v = value._v;
-            if (v == 0)
-            {
-                v = default(T).Mod;
-            }
-            return new StaticModInt<T>(v - 1);
-        }
-
-        public static StaticModInt<T> operator +(StaticModInt<T> lhs, StaticModInt<T> rhs)
-        {
-            var v = lhs._v + rhs._v;
-            if (v >= default(T).Mod)
-            {
-                v -= default(T).Mod;
-            }
-            return new StaticModInt<T>(v);
-        }
-
-        public static StaticModInt<T> operator -(StaticModInt<T> lhs, StaticModInt<T> rhs)
-        {
-            unchecked
-            {
-                var v = lhs._v - rhs._v;
-                if (v >= default(T).Mod)
-                {
-                    v += default(T).Mod;
-                }
-                return new StaticModInt<T>(v);
-            }
-        }
-
-        public static StaticModInt<T> operator *(StaticModInt<T> lhs, StaticModInt<T> rhs)
-        {
-            return new StaticModInt<T>((uint)((ulong)lhs._v * rhs._v % default(T).Mod));
-        }
-
-        /// <summary>
-        /// 除算を行います。
-        /// </summary>
-        /// <remarks>
-        /// <para>- 制約: <paramref name="rhs"/> に乗法の逆元が存在する。（gcd(<paramref name="rhs"/>, mod) = 1）</para>
-        /// <para>- 計算量: O(log(mod))</para>
-        /// </remarks>
-        public static StaticModInt<T> operator /(StaticModInt<T> lhs, StaticModInt<T> rhs) => lhs * rhs.Inv();
-
-        public static StaticModInt<T> operator +(StaticModInt<T> value) => value;
-        public static StaticModInt<T> operator -(StaticModInt<T> value) => new StaticModInt<T>() - value;
-        public static bool operator ==(StaticModInt<T> lhs, StaticModInt<T> rhs) => lhs._v == rhs._v;
-        public static bool operator !=(StaticModInt<T> lhs, StaticModInt<T> rhs) => lhs._v != rhs._v;
-        public static implicit operator StaticModInt<T>(int value) => new StaticModInt<T>(value);
-        public static implicit operator StaticModInt<T>(long value) => new StaticModInt<T>(value);
-
-        /// <summary>
-        /// 自身を x として、x^<paramref name="n"/> を返します。
-        /// </summary>
-        /// <remarks>
-        /// <para>制約: 0≤|<paramref name="n"/>|</para>
-        /// <para>計算量: O(log(<paramref name="n"/>))</para>
-        /// </remarks>
-        public StaticModInt<T> Pow(long n)
-        {
-            Debug.Assert(0 <= n);
-            var x = this;
-            var r = new StaticModInt<T>(1u);
-
-            while (n > 0)
-            {
-                if ((n & 1) > 0)
-                {
-                    r *= x;
-                }
-                x *= x;
+                if ((n & 1) != 0) r = barrett.Mul(r, y);
+                y = barrett.Mul(y, y);
                 n >>= 1;
             }
-
             return r;
         }
-
-        /// <summary>
-        /// 自身を x として、 xy≡1 なる y を返します。
-        /// </summary>
-        /// <remarks>
-        /// <para>制約: gcd(x, mod) = 1</para>
-        /// </remarks>
-        public StaticModInt<T> Inv()
-        {
-            if (default(T).IsPrime)
-            {
-                Debug.Assert(_v > 0);
-                return Pow(default(T).Mod - 2);
-            }
-            else
-            {
-                var (g, x) = Internal.InternalMath.InvGCD(_v, default(T).Mod);
-                Debug.Assert(g == 1);
-                return new StaticModInt<T>(x);
-            }
-        }
-
-        public override string ToString() => _v.ToString();
-        public override bool Equals(object obj) => obj is StaticModInt<T> && this == (StaticModInt<T>)obj;
-        public override int GetHashCode() => _v.GetHashCode();
     }
+}
 
-    /// <summary>
-    /// 四則演算時に自動で mod を取る整数型。実行時に mod が決まる場合でも使用可能です。
-    /// </summary>
-    /// <remarks>
-    /// 使用前に DynamicModInt&lt;<typeparamref name="T"/>&gt;.Mod に mod の値を設定する必要があります。
-    /// </remarks>
-    /// <typeparam name="T">mod の ID を表す構造体</typeparam>
-    /// <example>
-    /// <code>
-    /// using AtCoder.ModInt = AtCoder.DynamicModInt&lt;AtCoder.ModID0&gt;;
-    ///
-    /// void SomeMethod()
-    /// {
-    ///     ModInt.Mod = 1000000009;
-    ///     var m = new ModInt(1);
-    ///     m -= 2;
-    ///     Console.WriteLine(m);   // 1000000008
-    /// }
-    /// </code>
-    /// </example>
-    public readonly struct DynamicModInt<T> where T : struct, IDynamicModID
+namespace AtCoder.Internal
+{
+    public static class InternalBit
     {
-        private readonly uint _v;
-        private static Internal.Barrett bt;
-
         /// <summary>
-        /// 格納されている値を返します。
+        /// _blsi_u32 OR <paramref name="n"/> &amp; -<paramref name="n"/>
+        /// <para><paramref name="n"/>で立っているうちの最下位の 1 ビットのみを立てた整数を返す</para>
         /// </summary>
-        public int Value => (int)_v;
-
-        /// <summary>
-        /// mod を返します。
-        /// </summary>
-        public static int Mod
+        /// <param name="n"></param>
+        /// <returns><paramref name="n"/> &amp; -<paramref name="n"/></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int ExtractLowestSetBit(int n)
         {
-            get => (int)bt.Mod;
-            set
+            if (Bmi1.IsSupported)
             {
-                Debug.Assert(1 <= value);
-                bt = new Internal.Barrett((uint)value);
+                return (int)Bmi1.ExtractLowestSetBit((uint)n);
             }
+            return n & -n;
         }
 
         /// <summary>
-        /// <paramref name="v"/> に対して mod を取らずに DynamicModInt&lt;<typeparamref name="T"/>&gt; 型のインスタンスを生成します。
+        /// (<paramref name="n"/> &amp; (1 &lt;&lt; x)) != 0 なる最小の非負整数 x を求めます。
         /// </summary>
         /// <remarks>
-        /// <para>定数倍高速化のための関数です。 <paramref name="v"/> に 0 未満または mod 以上の値を入れた場合の挙動は未定義です。</para>
-        /// <para>制約: 0≤|<paramref name="v"/>|&lt;mod</para>
+        /// <para>BSF: Bit Scan Forward</para>
+        /// <para>制約: 1 ≤ <paramref name="n"/></para>
         /// </remarks>
-        public static DynamicModInt<T> Raw(int v)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int BSF(uint n)
         {
-            var u = unchecked((uint)v);
-            Debug.Assert(bt != null, $"使用前に {nameof(DynamicModInt<T>)}<{nameof(T)}>.{nameof(Mod)} プロパティに mod の値を設定してください。");
-            Debug.Assert(u < Mod);
-            return new DynamicModInt<T>(u);
+            Debug.Assert(n >= 1);
+            return BitOperations.TrailingZeroCount(n);
         }
-
-        /// <summary>
-        /// DynamicModInt&lt;<typeparamref name="T"/>&gt; 型のインスタンスを生成します。
-        /// </summary>
-        /// <remarks>
-        /// <para>- 使用前に DynamicModInt&lt;<typeparamref name="T"/>&gt;.Mod に mod の値を設定する必要があります。</para>
-        /// <para>- <paramref name="v"/> が 0 未満、もしくは mod 以上の場合、自動で mod を取ります。</para>
-        /// </remarks>
-        public DynamicModInt(long v) : this(Round(v)) { }
-
-        private DynamicModInt(uint v) => _v = v;
-
-        private static uint Round(long v)
-        {
-            Debug.Assert(bt != null, $"使用前に {nameof(DynamicModInt<T>)}<{nameof(T)}>.{nameof(Mod)} プロパティに mod の値を設定してください。");
-            var x = v % bt.Mod;
-            if (x < 0)
-            {
-                x += bt.Mod;
-            }
-            return (uint)x;
-        }
-
-        public static DynamicModInt<T> operator ++(DynamicModInt<T> value)
-        {
-            var v = value._v + 1;
-            if (v == bt.Mod)
-            {
-                v = 0;
-            }
-            return new DynamicModInt<T>(v);
-        }
-
-        public static DynamicModInt<T> operator --(DynamicModInt<T> value)
-        {
-            var v = value._v;
-            if (v == 0)
-            {
-                v = bt.Mod;
-            }
-            return new DynamicModInt<T>(v - 1);
-        }
-
-        public static DynamicModInt<T> operator +(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
-        {
-            var v = lhs._v + rhs._v;
-            if (v >= bt.Mod)
-            {
-                v -= bt.Mod;
-            }
-            return new DynamicModInt<T>(v);
-        }
-
-        public static DynamicModInt<T> operator -(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
-        {
-            unchecked
-            {
-                var v = lhs._v - rhs._v;
-                if (v >= bt.Mod)
-                {
-                    v += bt.Mod;
-                }
-                return new DynamicModInt<T>(v);
-            }
-        }
-
-        public static DynamicModInt<T> operator *(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
-        {
-            uint z = bt.Mul(lhs._v, rhs._v);
-            return new DynamicModInt<T>(z);
-        }
-
-        /// <summary>
-        /// 除算を行います。
-        /// </summary>
-        /// <remarks>
-        /// <para>- 制約: <paramref name="rhs"/> に乗法の逆元が存在する。（gcd(<paramref name="rhs"/>, mod) = 1）</para>
-        /// <para>- 計算量: O(log(mod))</para>
-        /// </remarks>
-        public static DynamicModInt<T> operator /(DynamicModInt<T> lhs, DynamicModInt<T> rhs) => lhs * rhs.Inv();
-
-        public static DynamicModInt<T> operator +(DynamicModInt<T> value) => value;
-        public static DynamicModInt<T> operator -(DynamicModInt<T> value) => new DynamicModInt<T>() - value;
-        public static bool operator ==(DynamicModInt<T> lhs, DynamicModInt<T> rhs) => lhs._v == rhs._v;
-        public static bool operator !=(DynamicModInt<T> lhs, DynamicModInt<T> rhs) => lhs._v != rhs._v;
-        public static implicit operator DynamicModInt<T>(int value) => new DynamicModInt<T>(value);
-        public static implicit operator DynamicModInt<T>(long value) => new DynamicModInt<T>(value);
-
-        /// <summary>
-        /// 自身を x として、x^<paramref name="n"/> を返します。
-        /// </summary>
-        /// <remarks>
-        /// <para>制約: 0≤|<paramref name="n"/>|</para>
-        /// <para>計算量: O(log(<paramref name="n"/>))</para>
-        /// </remarks>
-        public DynamicModInt<T> Pow(long n)
-        {
-            Debug.Assert(0 <= n);
-            var x = this;
-            var r = new DynamicModInt<T>(1u);
-
-            while (n > 0)
-            {
-                if ((n & 1) > 0)
-                {
-                    r *= x;
-                }
-                x *= x;
-                n >>= 1;
-            }
-
-            return r;
-        }
-
-        /// <summary>
-        /// 自身を x として、 xy≡1 なる y を返します。
-        /// </summary>
-        /// <remarks>
-        /// <para>制約: gcd(x, mod) = 1</para>
-        /// </remarks>
-        public DynamicModInt<T> Inv()
-        {
-            var (g, x) = Internal.InternalMath.InvGCD(_v, bt.Mod);
-            Debug.Assert(g == 1);
-            return new DynamicModInt<T>(x);
-        }
-
-        public override string ToString() => _v.ToString();
-        public override bool Equals(object obj) => obj is DynamicModInt<T> && this == (DynamicModInt<T>)obj;
-        public override int GetHashCode() => _v.GetHashCode();
     }
 }
 
@@ -1318,7 +1322,7 @@ namespace Test20200915
     {
         static void Main(string[] args)
         {
-            IAtCoderQuestion question = new QuestionB();
+            IAtCoderQuestion question = new QuestionA();
             var answers = question.Solve(Console.In);
 
             var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };

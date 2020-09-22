@@ -5,12 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Test20200915.Extensions;
-using Test20200915.Questions;
+using Test20200921.Questions;
 using System.Diagnostics;
-using System.Runtime.Intrinsics.X86;
-using System.Numerics;
+using AtCoder;
 using AtCoder.Internal;
+using System.Numerics;
+using System.Runtime.Intrinsics.X86;
 
 namespace AtCoder.Internal
 {
@@ -26,9 +26,9 @@ namespace AtCoder.Internal
         /// </summary>
         private static StaticModInt<T>[] sumIE = CalcurateSumIE();
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void Calculate(Span<StaticModInt<T>> a)
         {
-            System.Diagnostics.Debugger.Break();
             var n = a.Length;
             var h = InternalMath.CeilPow2(n);
 
@@ -39,6 +39,7 @@ namespace AtCoder.Internal
 
                 // ブロック数
                 int p = 1 << (h - ph);
+
                 var now = StaticModInt<T>.Raw(1);
 
                 // 各ブロックの s 段目
@@ -61,6 +62,7 @@ namespace AtCoder.Internal
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public static void CalculateInv(Span<StaticModInt<T>> a)
         {
             var n = a.Length;
@@ -81,13 +83,16 @@ namespace AtCoder.Internal
                 {
                     int offset = s << (h - ph + 1);
 
+                    var ls = a.Slice(offset, p);
+                    var rs = a.Slice(offset + p, p);
+
                     for (int i = 0; i < p; i++)
                     {
-                        var l = a[i + offset];
-                        var r = a[i + offset + p];
-                        a[i + offset] = l + r;
-                        a[i + offset + p] = StaticModInt<T>.Raw(
-                            unchecked((int)((ulong)(default(T).Mod + l.Value - r.Value) * (ulong)iNow.Value % default(T).Mod)));
+                        var l = ls[i];
+                        var r = rs[i];
+                        ls[i] = l + r;
+                        rs[i] = StaticModInt<T>.Raw(
+                            (int)((ulong)(default(T).Mod + l.Value - r.Value) * (ulong)iNow.Value % default(T).Mod));
                     }
                     iNow *= sumIE[InternalBit.BSF(~(uint)s)];
                 }
@@ -250,6 +255,7 @@ namespace AtCoder
         /// <para>定数倍高速化のための関数です。 <paramref name="v"/> に 0 未満または mod 以上の値を入れた場合の挙動は未定義です。</para>
         /// <para>制約: 0≤|<paramref name="v"/>|&lt;mod</para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StaticModInt<T> Raw(int v)
         {
             var u = unchecked((uint)v);
@@ -267,6 +273,7 @@ namespace AtCoder
 
         private StaticModInt(uint v) => _v = v;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint Round(long v)
         {
             var x = v % default(T).Mod;
@@ -277,6 +284,7 @@ namespace AtCoder
             return (uint)x;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StaticModInt<T> operator ++(StaticModInt<T> value)
         {
             var v = value._v + 1;
@@ -287,6 +295,7 @@ namespace AtCoder
             return new StaticModInt<T>(v);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static StaticModInt<T> operator --(StaticModInt<T> value)
         {
             var v = value._v;
@@ -355,7 +364,7 @@ namespace AtCoder
         {
             Debug.Assert(0 <= n);
             var x = this;
-            var r = new StaticModInt<T>(1u);
+            var r = Raw(1);
 
             while (n > 0)
             {
@@ -376,6 +385,7 @@ namespace AtCoder
         /// <remarks>
         /// <para>制約: gcd(x, mod) = 1</para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public StaticModInt<T> Inv()
         {
             if (default(T).IsPrime)
@@ -446,6 +456,7 @@ namespace AtCoder
         /// <para>定数倍高速化のための関数です。 <paramref name="v"/> に 0 未満または mod 以上の値を入れた場合の挙動は未定義です。</para>
         /// <para>制約: 0≤|<paramref name="v"/>|&lt;mod</para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DynamicModInt<T> Raw(int v)
         {
             var u = unchecked((uint)v);
@@ -465,6 +476,7 @@ namespace AtCoder
 
         private DynamicModInt(uint v) => _v = v;
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private static uint Round(long v)
         {
             Debug.Assert(bt != null, $"使用前に {nameof(DynamicModInt<T>)}<{nameof(T)}>.{nameof(Mod)} プロパティに mod の値を設定してください。");
@@ -476,6 +488,7 @@ namespace AtCoder
             return (uint)x;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DynamicModInt<T> operator ++(DynamicModInt<T> value)
         {
             var v = value._v + 1;
@@ -486,6 +499,7 @@ namespace AtCoder
             return new DynamicModInt<T>(v);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DynamicModInt<T> operator --(DynamicModInt<T> value)
         {
             var v = value._v;
@@ -496,6 +510,7 @@ namespace AtCoder
             return new DynamicModInt<T>(v - 1);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DynamicModInt<T> operator +(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
         {
             var v = lhs._v + rhs._v;
@@ -506,6 +521,7 @@ namespace AtCoder
             return new DynamicModInt<T>(v);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DynamicModInt<T> operator -(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
         {
             unchecked
@@ -519,6 +535,7 @@ namespace AtCoder
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static DynamicModInt<T> operator *(DynamicModInt<T> lhs, DynamicModInt<T> rhs)
         {
             uint z = bt.Mul(lhs._v, rhs._v);
@@ -552,7 +569,7 @@ namespace AtCoder
         {
             Debug.Assert(0 <= n);
             var x = this;
-            var r = new DynamicModInt<T>(1u);
+            var r = Raw(1);
 
             while (n > 0)
             {
@@ -573,6 +590,7 @@ namespace AtCoder
         /// <remarks>
         /// <para>制約: gcd(x, mod) = 1</para>
         /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public DynamicModInt<T> Inv()
         {
             var (g, x) = Internal.InternalMath.InvGCD(_v, bt.Mod);
@@ -585,6 +603,7 @@ namespace AtCoder
         public override int GetHashCode() => _v.GetHashCode();
     }
 }
+
 namespace AtCoder
 {
     public static partial class Math
@@ -1258,34 +1277,6 @@ namespace AtCoder.Internal
     }
 }
 
-namespace AtCoder
-{
-    public static partial class Math
-    {
-        /// <summary>
-        /// <paramref name="x"/>^<paramref name="n"/> mod <paramref name="m"/> を返します。
-        /// </summary>
-        /// <remarks>
-        /// <para>制約: 0≤<paramref name="n"/>, 1≤<paramref name="m"/></para>
-        /// <para>計算量: O(log<paramref name="n"/>)</para>
-        /// </remarks>
-        public static long PowMod(long x, long n, int m)
-        {
-            Debug.Assert(0 <= n && 1 <= m);
-            if (m == 1) return 0;
-            Barrett barrett = new Barrett((uint)m);
-            uint r = 1, y = (uint)InternalMath.SafeMod(x, m);
-            while (0 < n)
-            {
-                if ((n & 1) != 0) r = barrett.Mul(r, y);
-                y = barrett.Mul(y, y);
-                n >>= 1;
-            }
-            return r;
-        }
-    }
-}
-
 namespace AtCoder.Internal
 {
     public static class InternalBit
@@ -1322,154 +1313,238 @@ namespace AtCoder.Internal
     }
 }
 
-namespace Test20200915
+namespace AtCoder
+{
+    public static partial class Math
+    {
+        /// <summary>
+        /// <paramref name="x"/>^<paramref name="n"/> mod <paramref name="m"/> を返します。
+        /// </summary>
+        /// <remarks>
+        /// <para>制約: 0≤<paramref name="n"/>, 1≤<paramref name="m"/></para>
+        /// <para>計算量: O(log<paramref name="n"/>)</para>
+        /// </remarks>
+        public static long PowMod(long x, long n, int m)
+        {
+            Debug.Assert(0 <= n && 1 <= m);
+            if (m == 1) return 0;
+            Barrett barrett = new Barrett((uint)m);
+            uint r = 1, y = (uint)InternalMath.SafeMod(x, m);
+            while (0 < n)
+            {
+                if ((n & 1) != 0) r = barrett.Mul(r, y);
+                y = barrett.Mul(y, y);
+                n >>= 1;
+            }
+            return r;
+        }
+    }
+}
+
+
+namespace Test20200921
 {
     class Program
     {
         static void Main(string[] args)
         {
             IAtCoderQuestion question = new QuestionA();
-            var answers = question.Solve(Console.In);
-
-            var writer = new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = false };
-            Console.SetOut(writer);
-            foreach (var answer in answers)
-            {
-                Console.WriteLine(answer);
-            }
-            Console.Out.Flush();
+            using var io = new IOManager(Console.OpenStandardInput(), Console.OpenStandardOutput());
+            question.Solve(io);
         }
     }
 }
 
 #region Base Class
 
-namespace Test20200915.Questions
+namespace Test20200921.Questions
 {
 
     public interface IAtCoderQuestion
     {
-        IEnumerable<object> Solve(string input);
-        IEnumerable<object> Solve(TextReader inputStream);
+        string Solve(string input);
+        void Solve(IOManager io);
     }
 
     public abstract class AtCoderQuestionBase : IAtCoderQuestion
     {
-        public IEnumerable<object> Solve(string input)
+        public string Solve(string input)
         {
-            var stream = new MemoryStream(Encoding.Unicode.GetBytes(input));
-            var reader = new StreamReader(stream, Encoding.Unicode);
+            var inputStream = new MemoryStream(Encoding.UTF8.GetBytes(input));
+            var outputStream = new MemoryStream();
+            using var manager = new IOManager(inputStream, outputStream);
 
-            return Solve(reader);
+            Solve(manager);
+            manager.Flush();
+
+            outputStream.Seek(0, SeekOrigin.Begin);
+            var reader = new StreamReader(outputStream);
+            return reader.ReadToEnd();
         }
 
-        public abstract IEnumerable<object> Solve(TextReader inputStream);
-    }
-}
-
-#endregion
-
-#region Extensions
-
-namespace Test20200915.Extensions
-{
-    public static class StringExtensions
-    {
-        public static string Join<T>(this IEnumerable<T> source) => string.Concat(source);
-        public static string Join<T>(this IEnumerable<T> source, char separator) => string.Join(separator, source);
-        public static string Join<T>(this IEnumerable<T> source, string separator) => string.Join(separator, source);
+        public abstract void Solve(IOManager io);
     }
 
-    public static class TextReaderExtensions
+    public class IOManager : IDisposable
     {
-        public static int ReadInt(this TextReader reader) => int.Parse(ReadString(reader));
-        public static long ReadLong(this TextReader reader) => long.Parse(ReadString(reader));
-        public static double ReadDouble(this TextReader reader) => double.Parse(ReadString(reader));
-        public static string ReadString(this TextReader reader) => reader.ReadLine();
+        private readonly StreamReader _reader;
+        private readonly StreamWriter _writer;
+        private bool _disposedValue;
 
-        public static int[] ReadIntArray(this TextReader reader, char separator = ' ') => ReadStringArray(reader, separator).Select(int.Parse).ToArray();
-        public static long[] ReadLongArray(this TextReader reader, char separator = ' ') => ReadStringArray(reader, separator).Select(long.Parse).ToArray();
-        public static double[] ReadDoubleArray(this TextReader reader, char separator = ' ') => ReadStringArray(reader, separator).Select(double.Parse).ToArray();
-        public static string[] ReadStringArray(this TextReader reader, char separator = ' ') => reader.ReadLine().Split(separator);
+        const char ValidFirstChar = '!';
+        const char ValidLastChar = '~';
 
-        // Supports primitive type only.
-        public static T1 ReadValue<T1>(this TextReader reader) => (T1)Convert.ChangeType(reader.ReadLine(), typeof(T1));
-
-        public static (T1, T2) ReadValue<T1, T2>(this TextReader reader, char separator = ' ')
+        public IOManager(Stream input, Stream output)
         {
-            var inputs = ReadStringArray(reader, separator);
-            var v1 = (T1)Convert.ChangeType(inputs[0], typeof(T1));
-            var v2 = (T2)Convert.ChangeType(inputs[1], typeof(T2));
-            return (v1, v2);
+            _reader = new StreamReader(input);
+            _writer = new StreamWriter(output) { AutoFlush = false };
         }
 
-        public static (T1, T2, T3) ReadValue<T1, T2, T3>(this TextReader reader, char separator = ' ')
+        public char ReadChar()
         {
-            var inputs = ReadStringArray(reader, separator);
-            var v1 = (T1)Convert.ChangeType(inputs[0], typeof(T1));
-            var v2 = (T2)Convert.ChangeType(inputs[1], typeof(T2));
-            var v3 = (T3)Convert.ChangeType(inputs[2], typeof(T3));
-            return (v1, v2, v3);
+            Skip();
+            return (char)_reader.Read();
         }
 
-        public static (T1, T2, T3, T4) ReadValue<T1, T2, T3, T4>(this TextReader reader, char separator = ' ')
+        public string ReadString()
         {
-            var inputs = ReadStringArray(reader, separator);
-            var v1 = (T1)Convert.ChangeType(inputs[0], typeof(T1));
-            var v2 = (T2)Convert.ChangeType(inputs[1], typeof(T2));
-            var v3 = (T3)Convert.ChangeType(inputs[2], typeof(T3));
-            var v4 = (T4)Convert.ChangeType(inputs[3], typeof(T4));
-            return (v1, v2, v3, v4);
+            var builder = new StringBuilder();
+            int c;
+            Skip();
+
+            while (IsValidChar(c = _reader.Read()))
+            {
+                builder.Append((char)c);
+            }
+
+            return builder.ToString();
         }
 
-        public static (T1, T2, T3, T4, T5) ReadValue<T1, T2, T3, T4, T5>(this TextReader reader, char separator = ' ')
+        public string ReadLine()
         {
-            var inputs = ReadStringArray(reader, separator);
-            var v1 = (T1)Convert.ChangeType(inputs[0], typeof(T1));
-            var v2 = (T2)Convert.ChangeType(inputs[1], typeof(T2));
-            var v3 = (T3)Convert.ChangeType(inputs[2], typeof(T3));
-            var v4 = (T4)Convert.ChangeType(inputs[3], typeof(T4));
-            var v5 = (T5)Convert.ChangeType(inputs[4], typeof(T5));
-            return (v1, v2, v3, v4, v5);
+            Skip();
+            return _reader.ReadLine();
         }
 
-        public static (T1, T2, T3, T4, T5, T6) ReadValue<T1, T2, T3, T4, T5, T6>(this TextReader reader, char separator = ' ')
+        public int ReadInt() => (int)ReadLong();
+
+        public long ReadLong()
         {
-            var inputs = ReadStringArray(reader, separator);
-            var v1 = (T1)Convert.ChangeType(inputs[0], typeof(T1));
-            var v2 = (T2)Convert.ChangeType(inputs[1], typeof(T2));
-            var v3 = (T3)Convert.ChangeType(inputs[2], typeof(T3));
-            var v4 = (T4)Convert.ChangeType(inputs[3], typeof(T4));
-            var v5 = (T5)Convert.ChangeType(inputs[4], typeof(T5));
-            var v6 = (T6)Convert.ChangeType(inputs[5], typeof(T6));
-            return (v1, v2, v3, v4, v5, v6);
+            long result = 0;
+            bool isPositive = true;
+            Skip();
+            int c = _reader.Read();
+
+            if (c == '-')
+            {
+                isPositive = false;
+                c = _reader.Read();
+            }
+
+            do
+            {
+                result = result * 10 + (c - '0');
+            } while (IsValidChar(c = _reader.Read()));
+
+            return isPositive ? result : -result;
         }
 
-        public static (T1, T2, T3, T4, T5, T6, T7) ReadValue<T1, T2, T3, T4, T5, T6, T7>(this TextReader reader, char separator = ' ')
+        public double ReadDouble() => double.Parse(ReadString());
+        public decimal ReadDecimal() => decimal.Parse(ReadString());
+
+        // C#のバージョンが上がったらね……。
+        // private Span<char> ReadCharSpan(Span<char> buffer)
+
+        public int[] ReadIntArray(int n)
         {
-            var inputs = ReadStringArray(reader, separator);
-            var v1 = (T1)Convert.ChangeType(inputs[0], typeof(T1));
-            var v2 = (T2)Convert.ChangeType(inputs[1], typeof(T2));
-            var v3 = (T3)Convert.ChangeType(inputs[2], typeof(T3));
-            var v4 = (T4)Convert.ChangeType(inputs[3], typeof(T4));
-            var v5 = (T5)Convert.ChangeType(inputs[4], typeof(T5));
-            var v6 = (T6)Convert.ChangeType(inputs[5], typeof(T6));
-            var v7 = (T7)Convert.ChangeType(inputs[6], typeof(T7));
-            return (v1, v2, v3, v4, v5, v6, v7);
+            var a = new int[n];
+            for (int i = 0; i < a.Length; i++)
+            {
+                a[i] = ReadInt();
+            }
+            return a;
         }
 
-        public static (T1, T2, T3, T4, T5, T6, T7, T8) ReadValue<T1, T2, T3, T4, T5, T6, T7, T8>(this TextReader reader, char separator = ' ')
+        public long[] ReadLongArray(int n)
         {
-            var inputs = ReadStringArray(reader, separator);
-            var v1 = (T1)Convert.ChangeType(inputs[0], typeof(T1));
-            var v2 = (T2)Convert.ChangeType(inputs[1], typeof(T2));
-            var v3 = (T3)Convert.ChangeType(inputs[2], typeof(T3));
-            var v4 = (T4)Convert.ChangeType(inputs[3], typeof(T4));
-            var v5 = (T5)Convert.ChangeType(inputs[4], typeof(T5));
-            var v6 = (T6)Convert.ChangeType(inputs[5], typeof(T6));
-            var v7 = (T7)Convert.ChangeType(inputs[6], typeof(T7));
-            var v8 = (T8)Convert.ChangeType(inputs[7], typeof(T8));
-            return (v1, v2, v3, v4, v5, v6, v7, v8);
+            var a = new long[n];
+            for (int i = 0; i < a.Length; i++)
+            {
+                a[i] = ReadLong();
+            }
+            return a;
+        }
+
+        public double[] ReadDoubleArray(int n)
+        {
+            var a = new double[n];
+            for (int i = 0; i < a.Length; i++)
+            {
+                a[i] = ReadDouble();
+            }
+            return a;
+        }
+
+        public decimal[] ReadDecimalArray(int n)
+        {
+            var a = new decimal[n];
+            for (int i = 0; i < a.Length; i++)
+            {
+                a[i] = ReadDecimal();
+            }
+            return a;
+        }
+
+        public void WriteLine<T>(T value) => _writer.WriteLine(value.ToString());
+
+        public void WriteLine<T>(T[] value, char delimiter = ' ')
+        {
+            for (int i = 0; i < value.Length - 1; i++)
+            {
+                _writer.Write(value[i].ToString());
+                _writer.Write(delimiter);
+            }
+            _writer.WriteLine(value[value.Length - 1].ToString());
+        }
+
+        public void Flush() => _writer.Flush();
+
+        private static bool IsValidChar(int c) => ValidFirstChar <= c && c <= ValidLastChar;
+
+        private static void ThrowInvalidOperationException(string s) => throw new InvalidOperationException();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void Skip()
+        {
+            while (!IsValidChar(_reader.Peek()))
+            {
+                if (_reader.EndOfStream)
+                {
+                    ThrowInvalidOperationException("End of file.");
+                }
+                _reader.Read();
+            }
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposedValue)
+            {
+                if (disposing)
+                {
+                    _reader.Dispose();
+                    _writer.Flush();
+                    _writer.Dispose();
+                }
+
+                _disposedValue = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
         }
     }
 }

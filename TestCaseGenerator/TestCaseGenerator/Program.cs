@@ -21,19 +21,19 @@ namespace TestCaseGenerator
 
             var inputPath = Path.Combine(Environment.CurrentDirectory, inputFileName);
             var clipboard = new Clipboard();
-            clipboard.SetText($"new StreamReader(@\"{inputPath}\")");
+            clipboard.SetText($"new FileStream(@\"{inputPath}\", FileMode.Open, FileAccess.Read)");
         }
 
         static void WriteInput(TextWriter writer)
         {
-            const int N = 100000;
+            const int N = 300000;
 
             var rand = new Random();
 
-            writer.WriteLine($"{N} {N}");
+            writer.WriteLine($"{N}");
             for (int i = 0; i < N; i++)
             {
-                writer.WriteLine("1 5000 1000000000");
+                writer.WriteLine(rand.Next(1000000001));
             }
         }
 

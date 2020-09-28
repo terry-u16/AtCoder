@@ -1387,73 +1387,117 @@ namespace Test20200921.Questions
 
     public class IOManager : IDisposable
     {
-        private readonly StreamReader _reader;
+        private readonly BinaryReader _reader;
         private readonly StreamWriter _writer;
         private bool _disposedValue;
+        private byte[] _buffer = new byte[1024];
+        private int _length;
+        private int _cursor;
+        private bool _eof;
 
         const char ValidFirstChar = '!';
         const char ValidLastChar = '~';
 
         public IOManager(Stream input, Stream output)
         {
-            _reader = new StreamReader(input);
+            _reader = new BinaryReader(input);
             _writer = new StreamWriter(output) { AutoFlush = false };
         }
 
-        public char ReadChar()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private char ReadAscii()
         {
-            Skip();
-            return (char)_reader.Read();
+            if (_cursor == _length)
+            {
+                _cursor = 0;
+                _length = _reader.Read(_buffer);
+
+                if (_length == 0)
+                {
+                    if (!_eof)
+                    {
+                        _eof = true;
+                        return char.MinValue;
+                    }
+                    else
+                    {
+                        ThrowEndOfStreamException();
+                    }
+                }
+            }
+
+            return (char)_buffer[_cursor++];
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public char ReadChar()
+        {
+            char c;
+            while (!IsValidChar(c = ReadAscii())) { }
+            return c;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public string ReadString()
         {
             var builder = new StringBuilder();
-            int c;
-            Skip();
+            char c;
+            while (!IsValidChar(c = ReadAscii())) { }
 
-            while (IsValidChar(c = _reader.Read()))
+            do
             {
-                builder.Append((char)c);
-            }
+                builder.Append(c);
+            } while (IsValidChar(c = ReadAscii()));
 
             return builder.ToString();
         }
 
-        public string ReadLine()
-        {
-            Skip();
-            return _reader.ReadLine();
-        }
-
         public int ReadInt() => (int)ReadLong();
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public long ReadLong()
         {
             long result = 0;
             bool isPositive = true;
-            Skip();
-            int c = _reader.Read();
+            char c;
+
+            while (!IsNumericChar(c = ReadAscii())) { }
 
             if (c == '-')
             {
                 isPositive = false;
-                c = _reader.Read();
+                c = ReadAscii();
             }
 
             do
             {
-                result = result * 10 + (c - '0');
-            } while (IsValidChar(c = _reader.Read()));
+                result *= 10;
+                result += c - '0';
+            } while (IsNumericChar(c = ReadAscii()));
 
             return isPositive ? result : -result;
         }
 
-        public double ReadDouble() => double.Parse(ReadString());
-        public decimal ReadDecimal() => decimal.Parse(ReadString());
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private Span<char> ReadChunk(Span<char> span)
+        {
+            var i = 0;
+            char c;
+            while (!IsValidChar(c = ReadAscii())) { }
 
-        // C#のバージョンが上がったらね……。
-        // private Span<char> ReadCharSpan(Span<char> buffer)
+            do
+            {
+                span[i++] = c;
+            } while (IsValidChar(c = ReadAscii()));
+
+            return span.Slice(0, i);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public double ReadDouble() => double.Parse(ReadChunk(stackalloc char[32]));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public decimal ReadDecimal() => decimal.Parse(ReadChunk(stackalloc char[32]));
 
         public int[] ReadIntArray(int n)
         {
@@ -1495,36 +1539,53 @@ namespace Test20200921.Questions
             return a;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void WriteLine<T>(T value) => _writer.WriteLine(value.ToString());
 
-        public void WriteLine<T>(T[] value, char delimiter = ' ')
+        public void WriteLine<T>(IEnumerable<T> values, char separator)
         {
-            for (int i = 0; i < value.Length - 1; i++)
+            var e = values.GetEnumerator();
+            if (e.MoveNext())
             {
-                _writer.Write(value[i].ToString());
-                _writer.Write(delimiter);
+                _writer.Write(e.Current.ToString());
+
+                while (e.MoveNext())
+                {
+                    _writer.Write(separator);
+                    _writer.Write(e.Current.ToString());
+                }
             }
-            _writer.WriteLine(value[value.Length - 1].ToString());
+
+            _writer.WriteLine();
+        }
+
+        public void WriteLine<T>(Span<T> values, char separator) => WriteLine((ReadOnlySpan<T>)values, separator);
+
+        public void WriteLine<T>(ReadOnlySpan<T> values, char separator)
+        {
+            for (int i = 0; i < values.Length - 1; i++)
+            {
+                _writer.Write(values[i]);
+                _writer.Write(separator);
+            }
+
+            if (values.Length > 0)
+            {
+                _writer.Write(values[^1]);
+            }
+
+            _writer.WriteLine();
         }
 
         public void Flush() => _writer.Flush();
 
-        private static bool IsValidChar(int c) => ValidFirstChar <= c && c <= ValidLastChar;
-
-        private static void ThrowInvalidOperationException(string s) => throw new InvalidOperationException();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static bool IsValidChar(char c) => ValidFirstChar <= c && c <= ValidLastChar;
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private void Skip()
-        {
-            while (!IsValidChar(_reader.Peek()))
-            {
-                if (_reader.EndOfStream)
-                {
-                    ThrowInvalidOperationException("End of file.");
-                }
-                _reader.Read();
-            }
-        }
+        private static bool IsNumericChar(char c) => ('0' <= c && c <= '9') || c == '-';
+
+        private void ThrowEndOfStreamException() => throw new EndOfStreamException();
 
         protected virtual void Dispose(bool disposing)
         {

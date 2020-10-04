@@ -26,14 +26,14 @@ namespace TestCaseGenerator
 
         static void WriteInput(TextWriter writer)
         {
-            const int N = 300000;
+            const int N = 2000;
 
             var rand = new Random();
 
-            writer.WriteLine($"{N}");
-            for (int i = 0; i < N; i++)
+            writer.WriteLine($"{N} {N}");
+            for (int i = 0; i < 2 * N; i++)
             {
-                writer.WriteLine(rand.Next(1000000001));
+                writer.WriteLine($"{rand.Next(1000000)} {rand.Next(1000000)}");
             }
         }
 

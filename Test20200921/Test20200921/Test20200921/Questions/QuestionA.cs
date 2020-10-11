@@ -17,6 +17,7 @@ namespace Test20200921.Questions
 {
     public class QuestionA : AtCoderQuestionBase
     {
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public override void Solve(IOManager io)
         {
             var n = io.ReadInt();

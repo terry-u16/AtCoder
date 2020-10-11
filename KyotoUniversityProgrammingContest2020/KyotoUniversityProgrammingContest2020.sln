@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KyotoUniversityProgrammingContest2020", "KyotoUniversityProgrammingContest2020\KyotoUniversityProgrammingContest2020\KyotoUniversityProgrammingContest2020.csproj", "{D116C866-D917-4F2A-ADAC-34555A86B055}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KUPC2020.Test", "KyotoUniversityProgrammingContest2020\KyotoUniversityProgrammingContest2020.Test\KUPC2020.Test.csproj", "{19E51C2D-5FFE-416E-AD25-F8E0E8692D93}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D116C866-D917-4F2A-ADAC-34555A86B055}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D116C866-D917-4F2A-ADAC-34555A86B055}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D116C866-D917-4F2A-ADAC-34555A86B055}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D116C866-D917-4F2A-ADAC-34555A86B055}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19E51C2D-5FFE-416E-AD25-F8E0E8692D93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19E51C2D-5FFE-416E-AD25-F8E0E8692D93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19E51C2D-5FFE-416E-AD25-F8E0E8692D93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19E51C2D-5FFE-416E-AD25-F8E0E8692D93}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {78A89C86-8C11-424A-81BB-E1D7B057ECFD}
+	EndGlobalSection
+EndGlobal

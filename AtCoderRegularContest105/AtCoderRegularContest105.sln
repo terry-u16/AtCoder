@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtCoderRegularContest105", "AtCoderRegularContest105\AtCoderRegularContest105\AtCoderRegularContest105.csproj", "{8782556B-BC00-4639-B908-C6AD0D8FECBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtCoderRegularContest105.Test", "AtCoderRegularContest105\AtCoderRegularContest105.Test\AtCoderRegularContest105.Test.csproj", "{208380AB-3E81-4806-871D-BECB22E95BF5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8782556B-BC00-4639-B908-C6AD0D8FECBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8782556B-BC00-4639-B908-C6AD0D8FECBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8782556B-BC00-4639-B908-C6AD0D8FECBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8782556B-BC00-4639-B908-C6AD0D8FECBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{208380AB-3E81-4806-871D-BECB22E95BF5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{208380AB-3E81-4806-871D-BECB22E95BF5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{208380AB-3E81-4806-871D-BECB22E95BF5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{208380AB-3E81-4806-871D-BECB22E95BF5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C5E59CBC-10F1-4E18-A2FA-FA6C01DBC81F}
+	EndGlobalSection
+EndGlobal

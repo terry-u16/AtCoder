@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAST001", "PAST001\PAST001\PAST001.csproj", "{D98B391C-716B-4FA1-8ADB-1C3BB08A3EEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PAST001.Test", "PAST001\PAST001.Test\PAST001.Test.csproj", "{D1FF2AC8-7130-47A6-AA05-0BD73B719CDD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D98B391C-716B-4FA1-8ADB-1C3BB08A3EEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D98B391C-716B-4FA1-8ADB-1C3BB08A3EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D98B391C-716B-4FA1-8ADB-1C3BB08A3EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D98B391C-716B-4FA1-8ADB-1C3BB08A3EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1FF2AC8-7130-47A6-AA05-0BD73B719CDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1FF2AC8-7130-47A6-AA05-0BD73B719CDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1FF2AC8-7130-47A6-AA05-0BD73B719CDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1FF2AC8-7130-47A6-AA05-0BD73B719CDD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E7F9CF0E-1580-4B35-9773-3CD5F631161C}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationalCodeforcesRound85", "EducationalCodeforcesRound85\EducationalCodeforcesRound85\EducationalCodeforcesRound85.csproj", "{933FBC19-44A7-46F8-9789-9887001B84A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EducationalCodeforcesRound85.Test", "EducationalCodeforcesRound85\EducationalCodeforcesRound85.Test\EducationalCodeforcesRound85.Test.csproj", "{500B0A4A-34C7-41A8-A305-FB64BC80BD7F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{933FBC19-44A7-46F8-9789-9887001B84A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{933FBC19-44A7-46F8-9789-9887001B84A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{933FBC19-44A7-46F8-9789-9887001B84A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{933FBC19-44A7-46F8-9789-9887001B84A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{500B0A4A-34C7-41A8-A305-FB64BC80BD7F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{500B0A4A-34C7-41A8-A305-FB64BC80BD7F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{500B0A4A-34C7-41A8-A305-FB64BC80BD7F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{500B0A4A-34C7-41A8-A305-FB64BC80BD7F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {4FF35807-B831-4819-B9AD-64A5C4AB3FB3}
+	EndGlobalSection
+EndGlobal

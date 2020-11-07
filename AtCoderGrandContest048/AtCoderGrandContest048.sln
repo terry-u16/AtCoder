@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30114.105
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtCoderGrandContest048", "AtCoderGrandContest048\AtCoderGrandContest048\AtCoderGrandContest048.csproj", "{9BDCC990-2C52-4123-A273-6D8C46B2F261}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtCoderGrandContest048.Test", "AtCoderGrandContest048\AtCoderGrandContest048.Test\AtCoderGrandContest048.Test.csproj", "{D6054F05-6FCF-478B-AF6F-68AC3E41A106}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9BDCC990-2C52-4123-A273-6D8C46B2F261}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9BDCC990-2C52-4123-A273-6D8C46B2F261}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9BDCC990-2C52-4123-A273-6D8C46B2F261}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9BDCC990-2C52-4123-A273-6D8C46B2F261}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6054F05-6FCF-478B-AF6F-68AC3E41A106}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6054F05-6FCF-478B-AF6F-68AC3E41A106}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6054F05-6FCF-478B-AF6F-68AC3E41A106}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6054F05-6FCF-478B-AF6F-68AC3E41A106}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {51CE9B47-DC69-4C29-BA49-20D138F37C43}
+	EndGlobalSection
+EndGlobal

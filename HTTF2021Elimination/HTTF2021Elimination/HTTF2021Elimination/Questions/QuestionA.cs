@@ -42,6 +42,7 @@ namespace HTTF2021Elimination.Questions
         const int TimeLimit = 2900;
         const int SecondRow = 10;
         const int SecondColumn = 0;
+        const double ProbabilityTwo = 0.8;
         readonly Coordinate[] _cards;
 
         /// <summary>
@@ -158,9 +159,6 @@ namespace HTTF2021Elimination.Questions
 
             while (true)
             {
-                var cardA = random.Next(_takeOrder.Length);
-                var cardB = random.Next(_takeOrder.Length);
-
                 if (count++ % 10000 == 0)
                 {
                     temperature = CalculateTemp(sw.ElapsedMilliseconds, startTime, TimeLimit);
@@ -171,57 +169,52 @@ namespace HTTF2021Elimination.Questions
                     }
                 }
 
-                if (cardA == cardB)
+                if (random.NextDouble() < ProbabilityTwo)
                 {
-                    continue;
-                }
+                    var cards = new int[] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
 
-                var prev = CalculateLocal(cardA, cardB);
+                    if (cards[0] == cards[1])
+                    {
+                        continue;
+                    }
 
-                Swap(ref _takeOrderInv[cardA], ref _takeOrderInv[cardB]);
-                Swap(ref _takeOrder[_takeOrderInv[cardA]], ref _takeOrder[_takeOrderInv[cardB]]);
-                Swap(ref _compressed[cardA], ref _compressed[cardB]);
+                    var prev = CalculateLocal(cards);
 
-                var next = CalculateLocal(cardA, cardB);
+                    Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
+                    Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
+                    Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
 
-                // 大きい方が優秀
-                var diff = prev - next;
+                    var next = CalculateLocal(cards);
 
-                if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
-                {
-                }
-                else
-                {
-                    Swap(ref _takeOrderInv[cardA], ref _takeOrderInv[cardB]);
-                    Swap(ref _takeOrder[_takeOrderInv[cardA]], ref _takeOrder[_takeOrderInv[cardB]]);
-                    Swap(ref _compressed[cardA], ref _compressed[cardB]);
+                    // 大きい方が優秀
+                    var diff = prev - next;
+
+                    if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
+                    {
+                    }
+                    else
+                    {
+                        Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
+                        Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
+                        Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
+                    }
+
                 }
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        int CalculateLocal(int cardNoA, int cardNoB)
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        int CalculateLocal(Span<int> cardNos)
         {
-            var orderA = _takeOrderInv[cardNoA];
-            var orderB = _takeOrderInv[cardNoB];
-
-            // 小さい方が優秀
             var cost = 0;
 
-            var cardA = _cards[cardNoA];
-            var cardB = _cards[cardNoB];
-            var compA = _compressed[cardNoA];
-            var compB = _compressed[cardNoB];
-            cost += GetCollectCost(cardA, orderA);
-            cost += GetCollectCost(cardB, orderB);
-
-            cost += GetOrderCost(compA, cardNoA);
-            cost += GetOrderCost(compB, cardNoB);
-
-            if (Math.Abs(orderA - orderB) == 1)
+            foreach (var no in cardNos)
             {
-                cost -= cardA.GetDistanceTo(cardB);
-                cost -= compA.GetDistanceTo(compB);
+                var card = _cards[no];
+                var order = _takeOrderInv[no];
+                var comp = _compressed[no];
+                cost += GetCollectCost(card, order);
+                cost += GetOrderCost(comp, no);
             }
 
             return cost;

@@ -9,9 +9,6 @@ using System.Text;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Intrinsics.X86;
-using HTTF2021Elimination.Algorithms;
-using HTTF2021Elimination.Collections;
-using HTTF2021Elimination.Numerics;
 using HTTF2021Elimination.Questions;
 
 namespace HTTF2021Elimination.Questions
@@ -42,7 +39,6 @@ namespace HTTF2021Elimination.Questions
         const int TimeLimit = 2900;
         const int SecondRow = 10;
         const int SecondColumn = 0;
-        const double ProbabilityTwo = 0.8;
         readonly Coordinate[] _cards;
 
         /// <summary>
@@ -169,36 +165,32 @@ namespace HTTF2021Elimination.Questions
                     }
                 }
 
-                if (random.NextDouble() < ProbabilityTwo)
+                var cards = new int[] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
+
+                if (cards[0] == cards[1])
                 {
-                    var cards = new int[] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
+                    continue;
+                }
 
-                    if (cards[0] == cards[1])
-                    {
-                        continue;
-                    }
+                var prev = CalculateLocal(cards);
 
-                    var prev = CalculateLocal(cards);
+                Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
+                Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
+                Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
 
+                var next = CalculateLocal(cards);
+
+                // 大きい方が優秀
+                var diff = prev - next;
+
+                if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
+                {
+                }
+                else
+                {
                     Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
                     Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
                     Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
-
-                    var next = CalculateLocal(cards);
-
-                    // 大きい方が優秀
-                    var diff = prev - next;
-
-                    if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
-                    {
-                    }
-                    else
-                    {
-                        Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
-                        Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
-                        Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
-                    }
-
                 }
             }
         }
@@ -263,32 +255,6 @@ namespace HTTF2021Elimination.Questions
             {
                 var nextCard = _compressed[nextNo];
                 cost += card.GetDistanceTo(nextCard);
-            }
-
-            return cost;
-        }
-
-        int CalculateCost()
-        {
-            var cost = 0;
-            var row = 0;
-            var column = 0;
-
-            foreach (var i in _takeOrder)
-            {
-                var (r, c) = _cards[i];
-                cost += GetDistance(row - r, column - c);
-                row = r;
-                column = c;
-            }
-
-            (row, column) = _compressed[_takeOrder[0]];
-
-            foreach (var (r, c) in _compressed)
-            {
-                cost += GetDistance(row - r, column - c);
-                row = r;
-                column = c;
             }
 
             return cost;
@@ -371,31 +337,12 @@ namespace HTTF2021Elimination.Questions
             }
         }
 
-
-        int GetDistance(int dr, int dc) => Math.Abs(dr) + Math.Abs(dc);
-
         void Swap<T>(ref T a, ref T b)
         {
             var temp = a;
             a = b;
             b = temp;
         }
-    }
-
-    [StructLayout(LayoutKind.Auto)]
-    readonly struct Card
-    {
-        public readonly int Number;
-        public readonly Coordinate Coordinate;
-
-        public Card(int number, Coordinate coordinate)
-        {
-            Number = number;
-            Coordinate = coordinate;
-        }
-
-        public void Deconstruct(out int number, out Coordinate coordinate) => (number, coordinate) = (Number, Coordinate);
-        public override string ToString() => $"{nameof(Number)}: {Number}, {nameof(Coordinate)}: {Coordinate}";
     }
 
     [StructLayout(LayoutKind.Auto)]

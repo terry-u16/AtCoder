@@ -29,10 +29,24 @@ namespace HTTF2021Elimination.Questions
                 cards[i] = new Coordinate(io.ReadInt(), io.ReadInt());
             }
 
-            var solver = new Solver(cards);
-            solver.Annealing(sw);
+            var lastCost = int.MaxValue;
+            string result = "";
 
-            io.WriteLine(solver.GetResult());
+            for (int i = 1; i <= 5; i++)
+            {
+                var solver = new Solver(cards);
+                solver.Annealing(sw, 600 * i - 100);
+                var res = solver.GetResult();
+
+                var cost = res.Count(c => c == 'R' || c == 'D' || c == 'L' || c == 'U');
+
+                if (lastCost.ChangeMin(cost))
+                {
+                    result = res;
+                }
+            }
+
+            io.WriteLine(result);
         }
     }
 
@@ -42,7 +56,6 @@ namespace HTTF2021Elimination.Questions
         const int TimeLimit = 2900;
         const int SecondRow = 10;
         const int SecondColumn = 0;
-        const double ProbabilityTwo = 0.8;
         readonly Coordinate[] _cards;
 
         /// <summary>
@@ -150,55 +163,49 @@ namespace HTTF2021Elimination.Questions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public void Annealing(Stopwatch sw)
+        public void Annealing(Stopwatch sw, int timeLimit)
         {
             var random = new XorShift();
             var count = 0;
             var startTime = sw.ElapsedMilliseconds;
-            var temperature = CalculateTemp(startTime, startTime, TimeLimit);
+            var temperature = CalculateTemp(startTime, startTime, timeLimit);
 
             while (true)
             {
                 if (count++ % 10000 == 0)
                 {
-                    temperature = CalculateTemp(sw.ElapsedMilliseconds, startTime, TimeLimit);
+                    var t = sw.ElapsedMilliseconds;
+                    temperature = CalculateTemp(t, startTime, timeLimit);
 
-                    if (sw.ElapsedMilliseconds >= TimeLimit)
+                    if (t >= timeLimit)
                     {
                         break;
                     }
                 }
 
-                if (random.NextDouble() < ProbabilityTwo)
+                var cards = new int[] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
+
+                if (cards[0] == cards[1])
                 {
-                    var cards = new int[] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
+                    continue;
+                }
 
-                    if (cards[0] == cards[1])
-                    {
-                        continue;
-                    }
+                var prev = CalculateLocal(cards);
 
-                    var prev = CalculateLocal(cards);
+                Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
+                Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
+                Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
 
+                var next = CalculateLocal(cards);
+
+                // 大きい方が優秀
+                var diff = prev - next;
+
+                if (!(diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature)))
+                {
                     Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
                     Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
                     Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
-
-                    var next = CalculateLocal(cards);
-
-                    // 大きい方が優秀
-                    var diff = prev - next;
-
-                    if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
-                    {
-                    }
-                    else
-                    {
-                        Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
-                        Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
-                        Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
-                    }
-
                 }
             }
         }

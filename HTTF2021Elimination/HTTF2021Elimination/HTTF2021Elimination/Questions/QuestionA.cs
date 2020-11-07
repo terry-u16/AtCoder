@@ -26,7 +26,7 @@ namespace HTTF2021Elimination.Questions
                 cards[i] = new Coordinate(io.ReadInt(), io.ReadInt());
             }
 
-            var solver = new Solver(cards);
+            var solver = new Solver(cards, 3.5);
             solver.Annealing(sw);
 
             io.WriteLine(solver.GetResult());
@@ -40,6 +40,7 @@ namespace HTTF2021Elimination.Questions
         const int SecondRow = 10;
         const int SecondColumn = 0;
         readonly Coordinate[] _cards;
+        readonly double _initialTemperature;
 
         /// <summary>
         /// <see cref="_takeOrder"/>[order] = card;
@@ -52,12 +53,13 @@ namespace HTTF2021Elimination.Questions
         readonly int[] _takeOrderInv;
         readonly Coordinate[] _compressed;
 
-        public Solver(Coordinate[] cards)
+        public Solver(Coordinate[] cards, double initialTemperature)
         {
             _cards = cards;
             _takeOrder = new int[cards.Length];
             _takeOrderInv = new int[cards.Length];
             _compressed = new Coordinate[cards.Length];
+            _initialTemperature = initialTemperature;
             Initialize();
         }
 
@@ -263,7 +265,7 @@ namespace HTTF2021Elimination.Questions
 
         double CalculateTemp(long currentTime, long startTime, long endTime)
         {
-            const double startTemp = 25;
+            double startTemp = _initialTemperature;
             const double endTemp = 0;
             var duration = endTime - startTime;
             var dt = currentTime - startTime;

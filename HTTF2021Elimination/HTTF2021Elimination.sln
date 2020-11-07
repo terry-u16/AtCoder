@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HTTF2021Elimination", "HTTF2021Elimination\HTTF2021Elimination\HTTF2021Elimination.csproj", "{D1938C73-2A73-4987-B7B3-2EA7350C7E27}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HTTF2021Elimination", "HTTF2021Elimination\HTTF2021Elimination\HTTF2021Elimination.csproj", "{D1938C73-2A73-4987-B7B3-2EA7350C7E27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileTester", "FileTester\FileTester.csproj", "{930BD323-4EE0-4D5C-8C61-8BB6334F6B3A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileTester", "FileTester\FileTester.csproj", "{930BD323-4EE0-4D5C-8C61-8BB6334F6B3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BatchTester", "BatchTester\BatchTester.csproj", "{7526083E-32CB-4FCC-829B-8F8ED3BE6FF3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{930BD323-4EE0-4D5C-8C61-8BB6334F6B3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{930BD323-4EE0-4D5C-8C61-8BB6334F6B3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{930BD323-4EE0-4D5C-8C61-8BB6334F6B3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7526083E-32CB-4FCC-829B-8F8ED3BE6FF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7526083E-32CB-4FCC-829B-8F8ED3BE6FF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7526083E-32CB-4FCC-829B-8F8ED3BE6FF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7526083E-32CB-4FCC-829B-8F8ED3BE6FF3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -156,20 +156,41 @@ namespace HTTF2021Elimination.Questions
             var startTime = sw.ElapsedMilliseconds;
             var temperature = CalculateTemp(startTime, startTime, TimeLimit);
 
-            while (sw.ElapsedMilliseconds < TimeLimit)
+            while (true)
             {
                 var cardA = random.Next(_takeOrder.Length);
                 var cardB = random.Next(_takeOrder.Length);
 
-                if (count++ % 100 == 0)
+                if (count++ % 10000 == 0)
                 {
                     temperature = CalculateTemp(sw.ElapsedMilliseconds, startTime, TimeLimit);
+
+                    if (sw.ElapsedMilliseconds >= TimeLimit)
+                    {
+                        break;
+                    }
                 }
 
+                if (cardA == cardB)
+                {
+                    continue;
+                }
+
+                var prev = CalculateLocal(cardA, cardB);
+
+                Swap(ref _takeOrderInv[cardA], ref _takeOrderInv[cardB]);
+                Swap(ref _takeOrder[_takeOrderInv[cardA]], ref _takeOrder[_takeOrderInv[cardB]]);
+                Swap(ref _compressed[cardA], ref _compressed[cardB]);
+
+                var next = CalculateLocal(cardA, cardB);
+
                 // 大きい方が優秀
-                var diff = -CalculateDiff(cardA, cardB);
+                var diff = prev - next;
 
                 if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
+                {
+                }
+                else
                 {
                     Swap(ref _takeOrderInv[cardA], ref _takeOrderInv[cardB]);
                     Swap(ref _takeOrder[_takeOrderInv[cardA]], ref _takeOrder[_takeOrderInv[cardB]]);
@@ -178,105 +199,35 @@ namespace HTTF2021Elimination.Questions
             }
         }
 
-        int CalculateDiff(int cardNoA, int cardNoB)
+        [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+        int CalculateLocal(int cardNoA, int cardNoB)
         {
-            if (cardNoA == cardNoB)
-            {
-                return 0;
-            }
-
             var orderA = _takeOrderInv[cardNoA];
             var orderB = _takeOrderInv[cardNoB];
 
             // 小さい方が優秀
-            var diff = 0;
-
-            // A -> Bの順番で取るようにしておく
-            if (orderA.SwapIfLargerThan(ref orderB))
-            {
-                Swap(ref cardNoA, ref cardNoB);
-            }
+            var cost = 0;
 
             var cardA = _cards[cardNoA];
             var cardB = _cards[cardNoB];
             var compA = _compressed[cardNoA];
             var compB = _compressed[cardNoB];
+            cost += GetCollectCost(cardA, orderA);
+            cost += GetCollectCost(cardB, orderB);
 
-            // 最初の収集
-            if (orderB - orderA == 1)
+            cost += GetOrderCost(compA, cardNoA);
+            cost += GetOrderCost(compB, cardNoB);
+
+            if (Math.Abs(orderA - orderB) == 1)
             {
-                var last = new Coordinate();
-                var prevOrder = orderA - 1;
-
-                if (unchecked((uint)prevOrder < (uint)_takeOrder.Length))
-                {
-                    last = _cards[_takeOrder[prevOrder]];
-                }
-
-                var prevCost = 0;
-                prevCost += last.GetDistanceTo(cardA);
-                prevCost += cardA.GetDistanceTo(cardB);
-
-                var nextCost = 0;
-                nextCost += last.GetDistanceTo(cardB);
-                nextCost += cardB.GetDistanceTo(cardA);
-
-                var nextOrder = orderB + 1;
-                if (unchecked((uint)nextOrder < (uint)_takeOrder.Length))
-                {
-                    var nextCard = _cards[_takeOrder[nextOrder]];
-                    prevCost += cardB.GetDistanceTo(nextCard);
-                    nextCost += cardA.GetDistanceTo(nextCard);
-                }
-                diff += nextCost - prevCost;
-            }
-            else
-            {
-                var prevCost = GetCollectCost(cardA, orderA) + GetCollectCost(cardB, orderB);
-                var nextCost = GetCollectCost(cardB, orderA) + GetCollectCost(cardA, orderB);
-                diff += nextCost - prevCost;
+                cost -= cardA.GetDistanceTo(cardB);
+                cost -= compA.GetDistanceTo(compB);
             }
 
-            // 最後の並べ替え
-            if (orderB - orderA == 1)
-            {
-                var last = new Coordinate(SecondRow, SecondColumn);
-                var prevOrder = orderA - 1;
-
-                if (unchecked((uint)prevOrder < (uint)_takeOrder.Length))
-                {
-                    last = _compressed[_takeOrder[prevOrder]];
-                }
-
-                var prevCost = 0;
-                prevCost += last.GetDistanceTo(compA);
-                prevCost += compA.GetDistanceTo(compB);
-
-                var nextCost = 0;
-                nextCost += last.GetDistanceTo(compB);
-                nextCost += compB.GetDistanceTo(compA);
-
-                var nextOrder = orderB + 1;
-                if (unchecked((uint)nextOrder < (uint)_takeOrder.Length))
-                {
-                    var nextCard = _compressed[_takeOrder[nextOrder]];
-                    prevCost += compB.GetDistanceTo(nextCard);
-                    nextCost += compA.GetDistanceTo(nextCard);
-                }
-
-                diff += nextCost - prevCost;
-            }
-            else
-            {
-                var prevCost = GetOrderCost(compA, orderA) + GetOrderCost(compB, orderB);
-                var nextCost = GetOrderCost(compB, orderA) + GetOrderCost(compA, orderB);
-                diff += nextCost - prevCost;
-            }
-
-            return diff;
+            return cost;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
         int GetCollectCost(Coordinate card, int order)
         {
             var last = new Coordinate();
@@ -300,24 +251,24 @@ namespace HTTF2021Elimination.Questions
             return cost;
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        int GetOrderCost(Coordinate card, int order)
+        [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
+        int GetOrderCost(Coordinate card, int cardNo)
         {
             var last = new Coordinate(SecondRow, SecondColumn);
-            var prevOrder = order - 1;
+            var prevNo = cardNo - 1;
 
-            if (unchecked((uint)prevOrder < (uint)_takeOrder.Length))
+            if (unchecked((uint)prevNo < (uint)_compressed.Length))
             {
-                last = _compressed[_takeOrder[prevOrder]];
+                last = _compressed[prevNo];
             }
 
             var cost = 0;
             cost += last.GetDistanceTo(card);
 
-            var nextOrder = order + 1;
-            if (unchecked((uint)nextOrder < (uint)_takeOrder.Length))
+            var nextNo = cardNo + 1;
+            if (unchecked((uint)nextNo < (uint)_compressed.Length))
             {
-                var nextCard = _compressed[_takeOrder[nextOrder]];
+                var nextCard = _compressed[nextNo];
                 cost += card.GetDistanceTo(nextCard);
             }
 

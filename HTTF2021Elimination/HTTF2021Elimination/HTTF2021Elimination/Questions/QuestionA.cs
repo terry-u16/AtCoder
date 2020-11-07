@@ -39,7 +39,6 @@ namespace HTTF2021Elimination.Questions
         const int TimeLimit = 2900;
         const int SecondRow = 10;
         const int SecondColumn = 0;
-        const double ProbabilityTwo = 0.8;
         readonly Coordinate[] _cards;
 
         /// <summary>
@@ -153,7 +152,6 @@ namespace HTTF2021Elimination.Questions
             var count = 0;
             var startTime = sw.ElapsedMilliseconds;
             var temperature = CalculateTemp(startTime, startTime, TimeLimit);
-            Span<int> cards = stackalloc int[3];
 
             while (true)
             {
@@ -167,89 +165,50 @@ namespace HTTF2021Elimination.Questions
                     }
                 }
 
-                if (random.NextDouble() < ProbabilityTwo)
+                var cardA = random.Next(_takeOrderInv.Length);
+                var cardB = random.Next(_takeOrderInv.Length);
+
+                if (cardA == cardB)
                 {
-                    cards[0] = random.Next(_takeOrderInv.Length);
-                    cards[1] = random.Next(_takeOrderInv.Length);
-
-                    if (cards[0] == cards[1])
-                    {
-                        continue;
-                    }
-
-                    var span = cards.Slice(0, 2);
-
-                    var prev = CalculateLocal(span);
-
-                    Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
-                    Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
-                    Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
-
-                    var next = CalculateLocal(span);
-
-                    // 大きい方が優秀
-                    var diff = prev - next;
-
-                    if (!(diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature)))
-                    {
-                        Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
-                        Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
-                        Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
-                    }
+                    continue;
                 }
-                else
+
+                var prev = CalculateLocal(cardA, cardB);
+
+                Swap(ref _takeOrderInv[cardA], ref _takeOrderInv[cardB]);
+                Swap(ref _takeOrder[_takeOrderInv[cardA]], ref _takeOrder[_takeOrderInv[cardB]]);
+                Swap(ref _compressed[cardA], ref _compressed[cardB]);
+
+                var next = CalculateLocal(cardA, cardB);
+
+                // 大きい方が優秀
+                var diff = prev - next;
+
+                if (!(diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature)))
                 {
-                    const int range = 15;
-                    var shift = random.Next(_takeOrderInv.Length - range + 1);
-                    cards[0] = shift + random.Next(range);
-                    cards[1] = shift + random.Next(range);
-                    cards[2] = random.Next(_takeOrderInv.Length);
-
-                    if (cards[0] == cards[1] || cards[1] == cards[2] || cards[2] == cards[0])
-                    {
-                        continue;
-                    }
-
-                    var prev = CalculateLocal(cards);
-
-                    for (int i = 0; i < 2; i++)
-                    {
-                        Swap(ref _takeOrderInv[cards[i]], ref _takeOrderInv[cards[2]]);
-                        Swap(ref _takeOrder[_takeOrderInv[cards[i]]], ref _takeOrder[_takeOrderInv[cards[2]]]);
-                        Swap(ref _compressed[cards[i]], ref _compressed[cards[2]]);
-                    }
-
-                    var next = CalculateLocal(cards);
-
-                    // 大きい方が優秀
-                    var diff = prev - next;
-
-                    if (!(diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature)))
-                    {
-                        for (int i = 1; i >= 0; i--)
-                        {
-                            Swap(ref _takeOrderInv[cards[i]], ref _takeOrderInv[cards[2]]);
-                            Swap(ref _takeOrder[_takeOrderInv[cards[i]]], ref _takeOrder[_takeOrderInv[cards[2]]]);
-                            Swap(ref _compressed[cards[i]], ref _compressed[cards[2]]);
-                        }
-                    }
+                    Swap(ref _takeOrderInv[cardA], ref _takeOrderInv[cardB]);
+                    Swap(ref _takeOrder[_takeOrderInv[cardA]], ref _takeOrder[_takeOrderInv[cardB]]);
+                    Swap(ref _compressed[cardA], ref _compressed[cardB]);
                 }
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
-        int CalculateLocal(Span<int> cardNos)
+        int CalculateLocal(int cardNoA, int cardNoB)
         {
             var cost = 0;
 
-            foreach (var no in cardNos)
-            {
-                var card = _cards[no];
-                var order = _takeOrderInv[no];
-                var comp = _compressed[no];
-                cost += GetCollectCost(card, order);
-                cost += GetOrderCost(comp, no);
-            }
+            var cardA = _cards[cardNoA];
+            var orderA = _takeOrderInv[cardNoA];
+            var compA = _compressed[cardNoA];
+            cost += GetCollectCost(cardA, orderA);
+            cost += GetOrderCost(compA, cardNoA);
+
+            var cardB = _cards[cardNoB];
+            var orderB = _takeOrderInv[cardNoB];
+            var compB = _compressed[cardNoB];
+            cost += GetCollectCost(cardB, orderB);
+            cost += GetOrderCost(compB, cardNoB);
 
             return cost;
         }

@@ -30,50 +30,16 @@ namespace HTTF2021Elimination.Questions
             }
 
             var solver = new Solver(cards);
-            solver.Annealing(sw, 1450);
-            var firstResult = solver.GetResult();
+            solver.Annealing(sw);
 
-            for (int i = 0; i < cards.Length; i++)
-            {
-                var (r, c) = cards[i];
-                cards[i] = new Coordinate(c, r);
-            }
-
-            solver = new Solver(cards);
-            solver.Annealing(sw, 2890);
-            var secondResult = solver.GetResult();
-
-            var firstScore = firstResult.Count(c => c == 'U' || c == 'D' || c == 'L' || c == 'R');
-            var secondScore = secondResult.Count(c => c == 'U' || c == 'D' || c == 'L' || c == 'R');
-
-            if (firstScore <= secondScore)
-            {
-                io.WriteLine(firstResult);
-            }
-            else
-            {
-                var builder = new StringBuilder();
-
-                foreach (var c in secondResult)
-                {
-                    builder.Append(c switch
-                    {
-                        'U' => 'L',
-                        'L' => 'U',
-                        'D' => 'R',
-                        'R' => 'D',
-                        _ => c
-                    });
-                }
-
-                io.WriteLine(builder.ToString());
-            }
+            io.WriteLine(solver.GetResult());
         }
     }
 
     public class Solver
     {
         const int Size = 20;
+        const int TimeLimit = 2900;
         const int SecondRow = 10;
         const int SecondColumn = 0;
         const double ProbabilityTwo = 0.8;
@@ -184,20 +150,20 @@ namespace HTTF2021Elimination.Questions
         }
 
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
-        public void Annealing(Stopwatch sw, int timeLimit)
+        public void Annealing(Stopwatch sw)
         {
             var random = new XorShift();
             var count = 0;
             var startTime = sw.ElapsedMilliseconds;
-            var temperature = CalculateTemp(startTime, startTime, timeLimit);
+            var temperature = CalculateTemp(startTime, startTime, TimeLimit);
 
             while (true)
             {
                 if (count++ % 10000 == 0)
                 {
-                    temperature = CalculateTemp(sw.ElapsedMilliseconds, startTime, timeLimit);
+                    temperature = CalculateTemp(sw.ElapsedMilliseconds, startTime, TimeLimit);
 
-                    if (sw.ElapsedMilliseconds >= timeLimit)
+                    if (sw.ElapsedMilliseconds >= TimeLimit)
                     {
                         break;
                     }
@@ -205,7 +171,7 @@ namespace HTTF2021Elimination.Questions
 
                 if (random.NextDouble() < ProbabilityTwo)
                 {
-                    var cards = new int[2] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
+                    var cards = new int[] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
 
                     if (cards[0] == cards[1])
                     {
@@ -223,47 +189,16 @@ namespace HTTF2021Elimination.Questions
                     // 大きい方が優秀
                     var diff = prev - next;
 
-                    if (!(diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature)))
+                    if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
+                    {
+                    }
+                    else
                     {
                         Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
                         Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
                         Swap(ref _compressed[cards[0]], ref _compressed[cards[1]]);
                     }
-                }
-                else
-                {
-                    var cards = new int[3] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
 
-                    if (cards[0] == cards[1] || cards[1] == cards[2] || cards[2] == cards[0])
-                    {
-                        continue;
-                    }
-
-                    var prev = CalculateLocal(cards);
-
-                    for (int i = 0; i + 1 < cards.Length; i++)
-                    {
-                        var card = cards[i];
-                        Swap(ref _takeOrderInv[card], ref _takeOrderInv[cards[2]]);
-                        Swap(ref _takeOrder[_takeOrderInv[card]], ref _takeOrder[_takeOrderInv[cards[2]]]);
-                        Swap(ref _compressed[card], ref _compressed[cards[2]]);
-                    }
-
-                    var next = CalculateLocal(cards);
-
-                    // 大きい方が優秀
-                    var diff = prev - next;
-
-                    if (!(diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature)))
-                    {
-                        for (int i = cards.Length - 2; i >= 0; i--)
-                        {
-                            var card = cards[i];
-                            Swap(ref _takeOrderInv[card], ref _takeOrderInv[cards[2]]);
-                            Swap(ref _takeOrder[_takeOrderInv[card]], ref _takeOrder[_takeOrderInv[cards[2]]]);
-                            Swap(ref _compressed[card], ref _compressed[cards[2]]);
-                        }
-                    }
                 }
             }
         }

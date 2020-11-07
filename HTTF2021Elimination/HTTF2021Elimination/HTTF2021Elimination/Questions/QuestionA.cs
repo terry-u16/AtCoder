@@ -151,21 +151,28 @@ namespace HTTF2021Elimination.Questions
         [MethodImpl(MethodImplOptions.AggressiveOptimization)]
         public void Annealing(Stopwatch sw)
         {
+            const int firstMaxDiff = 100;
+            const int lastMaxDiff = 30;
             var random = new XorShift();
             var count = 0;
             var startTime = sw.ElapsedMilliseconds;
+            var duration = TimeLimit - startTime;
             var temperature = CalculateTemp(startTime, startTime, TimeLimit);
+            var maxDiff = firstMaxDiff;
 
             while (true)
             {
-                var cardA = random.Next(_takeOrder.Length);
-                var cardB = random.Next(_takeOrder.Length);
+                var shift = random.Next(_takeOrder.Length - maxDiff + 1);
+                var cardA = shift + random.Next(maxDiff);
+                var cardB = shift + random.Next(maxDiff);
 
                 if (count++ % 10000 == 0)
                 {
-                    temperature = CalculateTemp(sw.ElapsedMilliseconds, startTime, TimeLimit);
+                    var t = sw.ElapsedMilliseconds;
+                    temperature = CalculateTemp(t, startTime, TimeLimit);
+                    maxDiff = (int)(firstMaxDiff + (lastMaxDiff - firstMaxDiff) * (double)t / duration);
 
-                    if (sw.ElapsedMilliseconds >= TimeLimit)
+                    if (t >= TimeLimit)
                     {
                         break;
                     }
@@ -187,11 +194,9 @@ namespace HTTF2021Elimination.Questions
                 // 大きい方が優秀
                 var diff = prev - next;
 
-                if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
+                if (!(diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature)))
                 {
-                }
-                else
-                {
+                    // revert
                     Swap(ref _takeOrderInv[cardA], ref _takeOrderInv[cardB]);
                     Swap(ref _takeOrder[_takeOrderInv[cardA]], ref _takeOrder[_takeOrderInv[cardB]]);
                     Swap(ref _compressed[cardA], ref _compressed[cardB]);
@@ -217,12 +222,6 @@ namespace HTTF2021Elimination.Questions
 
             cost += GetOrderCost(compA, cardNoA);
             cost += GetOrderCost(compB, cardNoB);
-
-            if (Math.Abs(orderA - orderB) == 1)
-            {
-                cost -= cardA.GetDistanceTo(cardB);
-                cost -= compA.GetDistanceTo(compB);
-            }
 
             return cost;
         }

@@ -27,8 +27,42 @@ namespace HTTF2021Elimination.Questions
             }
 
             var solver = new Solver(cards);
+            var firstResult = solver.Solve();
 
-            io.WriteLine(solver.Solve());
+            for (int i = 0; i < cards.Length; i++)
+            {
+                var (r, c) = cards[i];
+                cards[i] = new Coordinate(c, r);
+            }
+
+            solver = new Solver(cards);
+            var secondResult = solver.Solve();
+
+            var firstScore = firstResult.Count(c => c == 'U' || c == 'D' || c == 'L' || c == 'R');
+            var secondScore = secondResult.Count(c => c == 'U' || c == 'D' || c == 'L' || c == 'R');
+
+            if (firstScore < secondScore)
+            {
+                io.WriteLine(firstResult);
+            }
+            else
+            {
+                var builder = new StringBuilder();
+
+                foreach (var c in secondResult)
+                {
+                    builder.Append(c switch
+                    {
+                        'U' => 'L',
+                        'L' => 'U',
+                        'R' => 'D',
+                        'D' => 'R',
+                        _ => c
+                    });
+                }
+
+                io.WriteLine(builder.ToString());
+            }
         }
     }
 
@@ -36,12 +70,10 @@ namespace HTTF2021Elimination.Questions
     {
         const int Size = 20;
         readonly Coordinate[] _cards;
-        readonly int _baseCost = 0;
 
         public Solver(Coordinate[] cards)
         {
             _cards = cards;
-            _baseCost = GetBaseCost();
         }
 
         public string Solve()
@@ -153,24 +185,6 @@ namespace HTTF2021Elimination.Questions
                 }
             }
 
-        }
-
-        int GetBaseCost()
-        {
-            var row = 0;
-            var column = 0;
-            var score = 0;
-
-            foreach (var (r, c) in _cards)
-            {
-                var dr = r - row;
-                var dc = c - column;
-                score += Math.Abs(dr) + Math.Abs(dc);
-                row = r;
-                column = c;
-            }
-
-            return score;
         }
     }
 

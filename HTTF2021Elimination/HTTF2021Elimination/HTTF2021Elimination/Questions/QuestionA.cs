@@ -152,6 +152,7 @@ namespace HTTF2021Elimination.Questions
             var count = 0;
             var startTime = sw.ElapsedMilliseconds;
             var temperature = CalculateTemp(startTime, startTime, TimeLimit);
+            Span<int> cards = stackalloc int[2];
 
             while (true)
             {
@@ -165,7 +166,8 @@ namespace HTTF2021Elimination.Questions
                     }
                 }
 
-                var cards = new int[] { random.Next(_takeOrder.Length), random.Next(_takeOrder.Length) };
+                cards[0] = random.Next(_takeOrderInv.Length);
+                cards[1] = random.Next(_takeOrderInv.Length);
 
                 if (cards[0] == cards[1])
                 {
@@ -183,10 +185,7 @@ namespace HTTF2021Elimination.Questions
                 // 大きい方が優秀
                 var diff = prev - next;
 
-                if (diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature))
-                {
-                }
-                else
+                if (!(diff >= 0 || random.NextDouble() <= Math.Exp(diff / temperature)))
                 {
                     Swap(ref _takeOrderInv[cards[0]], ref _takeOrderInv[cards[1]]);
                     Swap(ref _takeOrder[_takeOrderInv[cards[0]]], ref _takeOrder[_takeOrderInv[cards[1]]]);
@@ -262,7 +261,7 @@ namespace HTTF2021Elimination.Questions
 
         double CalculateTemp(long currentTime, long startTime, long endTime)
         {
-            const double startTemp = 20;
+            const double startTemp = 25;
             const double endTemp = 0;
             var duration = endTime - startTime;
             var dt = currentTime - startTime;
